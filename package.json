@@ -13,6 +13,7 @@
     "express": "^4.17.1",
     "nodemon": "^2.0.2",
     "peerjs": "^1.2.0",
+    "ringbufferjs": "^1.1.0",
     "socket.io": "^2.3.0"
   }
 }

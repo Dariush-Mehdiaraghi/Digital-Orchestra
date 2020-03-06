@@ -1225,6 +1225,11 @@ restore-cursor@^2.0.0:
     onetime "^2.0.0"
     signal-exit "^3.0.2"
 
+ringbufferjs@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ringbufferjs/-/ringbufferjs-1.1.0.tgz#83f78108cf5dd95d2f3ab4a84352ad15829721d3"
+  integrity sha512-Hd1Z8xyaQLhdKtmbOuRCwCT9rKYk7SwUXENsA9pSAj6Jv4otUh7IwOlEhj0xu/xcP7hosMnmE7AYaVp6m8MCPQ==
+
 rtcpeerconnection-shim@^1.2.15:
   version "1.2.15"
   resolved "https://registry.yarnpkg.com/rtcpeerconnection-shim/-/rtcpeerconnection-shim-1.2.15.tgz#e7cc189a81b435324c4949aa3dfb51888684b243"
