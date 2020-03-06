@@ -7,35 +7,11 @@ let slaveSketch = function (p) {
     p.peakCount = 0
     let streamObj
     p.setup = function () {
-        if (!navigator.getUserMedia)
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-              navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-if (navigator.getUserMedia){
-
-navigator.getUserMedia({audio:true}, 
-function(stream) {
-    streamObj = stream
-},
-function(e) {
-alert('Error capturing audio.');
-}
-);
-
-} else { alert('getUserMedia not supported in this browser.'); }
-       /* navigator.permissions.query({ name: 'microphone' })
-            .then(function (permissionStatus) {
-                console.log('🎤 Microphone permission state is', permissionStatus.state);
-
-                permissionStatus.onchange = function () {
-                    console.log('microphone permission state has changed to ', this.state);
-                };
-            }); */
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
         p.mic = new p5.AudioIn();
-        p.mic.stream = streamObj
+        p.mic.input.context = window.AudioContext = window.AudioContext || window.webkitAudioContext;
         p.mic.start();
         p.fft = new p5.FFT(0.8, 16384);
         p.fft.smooth(0.9)
