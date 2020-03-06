@@ -119,3 +119,4 @@ console.log = function (...items) {
     output.scrollTop = output.scrollHeight;
 };
 //end of mobile console
+

@@ -5,19 +5,37 @@ let slaveSketch = function (p) {
     p.fft;
     p.peakBuffer = []
     p.peakCount = 0
+    let streamObj
     p.setup = function () {
-        navigator.permissions.query({ name: 'microphone' })
+        if (!navigator.getUserMedia)
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+              navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+if (navigator.getUserMedia){
+
+navigator.getUserMedia({audio:true}, 
+function(stream) {
+    streamObj = stream
+},
+function(e) {
+alert('Error capturing audio.');
+}
+);
+
+} else { alert('getUserMedia not supported in this browser.'); }
+       /* navigator.permissions.query({ name: 'microphone' })
             .then(function (permissionStatus) {
                 console.log('🎤 Microphone permission state is', permissionStatus.state);
 
                 permissionStatus.onchange = function () {
                     console.log('microphone permission state has changed to ', this.state);
                 };
-            });
+            }); */
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
         p.mic = new p5.AudioIn();
+        p.mic.stream = streamObj
         p.mic.start();
         p.fft = new p5.FFT(0.8, 16384);
         p.fft.smooth(0.9)
@@ -51,6 +69,7 @@ let slaveSketch = function (p) {
             ) {
                 frequencyFound = peakFreq
                 console.log(frequencyFound)
+                window.navigator.vibrate([200, 100, 200]);
             }
 
 
@@ -91,32 +110,4 @@ let slaveSketch = function (p) {
 
         return maxIndex;
     }
-    function CircularBuffer(n) {
-        this._array = new Array(n);
-        this.length = 0;
-    }
-    CircularBuffer.prototype.toString = function () {
-        return '[object CircularBuffer(' + this._array.length + ') length ' + this.length + ']';
-    };
-    CircularBuffer.prototype.get = function (i) {
-        if (i < 0 || i < this.length - this._array.length)
-            return undefined;
-        return this._array[i % this._array.length];
-    };
-    CircularBuffer.prototype.set = function (i, v) {
-        if (i < 0 || i < this.length - this._array.length)
-            throw CircularBuffer.IndexError;
-        while (i > this.length) {
-            this._array[this.length % this._array.length] = undefined;
-            this.length++;
-        }
-        this._array[i % this._array.length] = v;
-        if (i == this.length)
-            this.length++;
-    };
-    CircularBuffer.prototype.push = function (v) {
-        this._array[this.length % this._array.length] = v;
-        this.length++;
-    };
-    CircularBuffer.IndexError = {};
 }
