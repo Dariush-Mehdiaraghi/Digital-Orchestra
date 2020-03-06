@@ -6,7 +6,7 @@ const handleSuccess = function(stream) {
     streamObj = audioContext.createMediaStreamSource(stream);
   };
   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-.then(handleSuccess(stream))
+.then(handleSuccess)
 .catch(function(err) {
    console.log("Catch of getUserMedia" + err)
   });
