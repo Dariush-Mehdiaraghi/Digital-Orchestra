@@ -1,18 +1,28 @@
+let streamObj
+let audioContext = new AudioContext();
 
+const handleSuccess = function(stream) {
+    console.log(stream)
+    streamObj = audioContext.createMediaStreamSource(stream);
+  };
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+.then(handleSuccess);
 let frequencyFound
+
 let slaveSketch = function (p) {
     p.mic;
     p.fft;
     p.peakBuffer = []
     p.peakCount = 0
-    let streamObj
+    
     p.setup = function () {
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
         p.mic = new p5.AudioIn();
-        p.mic.input.context = window.AudioContext = window.AudioContext || window.webkitAudioContext;
+     
         p.mic.start();
+        p.mic.stream = streamObj
         p.fft = new p5.FFT(0.8, 16384);
         p.fft.smooth(0.9)
         p.fft.setInput(p.mic);
