@@ -91,6 +91,7 @@ $(".ping").click(function () {
 $("#slave").click(function () {
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
     mySketch = new p5(slaveSketch)
+    mySketch.loop();
 });
 
 $("#master").click(function () {
