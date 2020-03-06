@@ -19,6 +19,7 @@ let slaveSketch = function (p) {
     p.peakCount = 0
     
     p.setup = function () {
+        console.log("setup started")
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
