@@ -2,8 +2,9 @@ let streamObj
 let audioContext = new AudioContext();
 
 const handleSuccess = function(stream) {
-    console.log(stream)
+   
     streamObj = audioContext.createMediaStreamSource(stream);
+    console.log("Stream active: "+ streamObj.mediaStream.active)
   };
   navigator.mediaDevices.getUserMedia({ audio: true, video: false })
 .then(handleSuccess)
@@ -13,6 +14,7 @@ const handleSuccess = function(stream) {
 let frequencyFound
 
 let slaveSketch = function (p) {
+    console.log("p5 skectch first Line started")
     p.mic;
     p.fft;
     p.peakBuffer = []
@@ -27,7 +29,7 @@ let slaveSketch = function (p) {
      
         p.mic.start();
         p.mic.stream = streamObj
-        p.fft = new p5.FFT(0.8, 16384);
+        p.fft = new p5.FFT(); //good is : 0.8, 16384
         p.fft.smooth(0.9)
         p.fft.setInput(p.mic);
 

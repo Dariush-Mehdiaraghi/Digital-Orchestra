@@ -104,9 +104,9 @@ var output = document.createElement('console');
 document.body.appendChild(output);
 
 // Reference to native method(s)
-var oldLog = console.error;
+var oldLog = console.log;
 
-console.error = function (...items) {
+console.log = function (...items) {
 
     // Call native method first
     oldLog.apply(this, items);
