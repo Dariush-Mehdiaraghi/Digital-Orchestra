@@ -91,6 +91,17 @@ $(".ping").click(function () {
 $("#slave").click(function () {
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
     mySketch = new p5(slaveSketch)
+    audioContext  = new AudioContext();
+
+const handleSuccess = function(stream) {
+    console.log(stream)
+    streamObj = audioContext.createMediaStreamSource(stream);
+  };
+  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+.then(handleSuccess)
+.catch(function(err) {
+   console.log("Catch of getUserMedia" + err)
+  });
 });
 
 $("#master").click(function () {

@@ -1,15 +1,5 @@
 let streamObj
-let audioContext = new AudioContext();
-
-const handleSuccess = function(stream) {
-    console.log(stream)
-    streamObj = audioContext.createMediaStreamSource(stream);
-  };
-  navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-.then(handleSuccess)
-.catch(function(err) {
-   console.log("Catch of getUserMedia" + err)
-  });
+let audioContext 
 let frequencyFound
 
 let slaveSketch = function (p) {
