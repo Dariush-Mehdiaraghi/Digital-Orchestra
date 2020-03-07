@@ -5,7 +5,7 @@ let spectrum = new Uint8Array(8192);
 let frequencyFound
 
 let slaveSketch = function (p) {
-   
+
     p.mic;
     p.fft;
     p.peakBuffer = []
@@ -30,7 +30,7 @@ let slaveSketch = function (p) {
 
     p.draw = function () {
 
-   //  /*     
+        //  /*     
         p.stroke(0)
         p.background(255);
         // let spectrum = p.fft.analyze();
@@ -55,19 +55,23 @@ let slaveSketch = function (p) {
                 peakFreq > 1900
             ) {
                 frequencyFound = peakFreq
+                if (!hasMaster) {
+                    socket.emit('foundFreq', frequencyFound)
+                }
                 console.log(frequencyFound)
+
                 //window.navigator.vibrate([200, 100, 200]);
             }
 
 
         }
-       // /* 
-         p.beginShape();
+        // /* 
+        p.beginShape();
         for (i = 0; i < spectrum.length; i++) {
             p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
         }
         p.endShape();
-      if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
+        if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
             p.fill(50)
             p.text("Amp: " + spectrum[indexOfMaxValue], indexOfMaxValue, p.height / 2)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
@@ -77,6 +81,7 @@ let slaveSketch = function (p) {
 
         } //*/
     }
+
     function windowResized() {
         p.resizeCanvas(p.windowWidth, p.windowHeight * 0.5);
     }

@@ -22,7 +22,7 @@ io.on('connection', function (socket) {
         // socket.broadcast.emit('peerIDmsg-Other', msg)
     });
     socket.on('imMaster', function (peerID) {
-        let freq = frequencies[rooms.size]; 
+        let freq = frequencies[rooms.size];
         if (rooms.has(freq)) {  //cheking inf there is already
             for (let i = 0; i < frequencies.length; i++) {
                 if (!rooms.has(frequencies[i])) {
@@ -35,17 +35,17 @@ io.on('connection', function (socket) {
         }
         else {
             let hasAlreadyRoom = false
-            for (let peerIDInRoom of rooms.values()) {    
-                    hasAlreadyRoom = peerIDInRoom == peerID 
+            for (let peerIDInRoom of rooms.values()) {
+                hasAlreadyRoom = peerIDInRoom == peerID
             }
-            if(hasAlreadyRoom) {
+            if (hasAlreadyRoom) {
                 console.log("didn't create a room bc there is already one")
             }
-            else{
+            else {
                 rooms.set(freq, peerID);
                 socket.emit('frequencyToPlay', freq);
                 console.log("👨‍👩‍👧‍👦 Room created with " + peerID + " as Master with " + freq + "Hz")
-               
+
             }
         }
 
@@ -53,12 +53,17 @@ io.on('connection', function (socket) {
     socket.on('foundFreq', function (freq) {
         if (rooms.has(freq)) {
             let room = rooms.get(freq)
-            socket.emit('foundFreq', true)
+            socket.emit('foundFreq', room)
             socket.join(room)
             console.log("🙇🏾‍♂️ a Slave has joined the Room of: " + room)
+        } else {
+            socket.emit('foundFreq', false)
         }
-        socket.emit('foundFreq', false)
     });
+    socket.on('start', function (obj) {
+        console.log("got start message from " + obj.peerID)
+        io.to(obj.freq).emit('peerIDmsg', obj.peerID);
+    })
     socket.on('disconnect', function () {
         console.log("💔 user disconnected " + clients.get(socket))
         rooms.forEach((peerID, freq) => {

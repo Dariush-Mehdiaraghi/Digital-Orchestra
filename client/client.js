@@ -4,7 +4,7 @@ let connections = [];
 let timeOnSend;
 let myRole;
 let mySketch;
-
+let hasMaster = false
 
 socket.on('peerIDmsg-Other', function (msg) {
     let peerIDs = connections.map((connection) => { return connection.peer }) //checking if we already have this Connection
@@ -16,6 +16,17 @@ socket.on('peerIDmsg-Other', function (msg) {
 socket.on('frequencyToPlay', function (freq) {
     console.log("〰️ I have to play at " + freq + "Hz now")
     frequencyToPlay = freq;
+})
+socket.on('foundFreq', function (room) {
+    if (room != false) {
+        hasMaster = true
+        console.log("👨‍👩‍👧‍👦 I have joined the room of " + room)
+        let peerIDs = connections.map((connection) => { return connection.peer }) //checking if we already have this Connection
+        if (!peerIDs.includes(room)) {
+            let conn = peer.connect(room);
+            setupConn(conn);
+        }
+    }
 })
 peer.on('connection', function (recivedConn) {
     if (!alreadyHaveConnection(recivedConn)) {
@@ -89,18 +100,18 @@ $(".ping").click(function () {
 });
 
 $("#slave").click(function () {
-   /* 
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-          .then(permissionState => {
-            if (permissionState === 'granted') {
-              window.addEventListener('devicemotion', () => {});
-            }
-          })
-          .catch(console.error);
-      } else {
-        // handle regular non iOS 13+ devices
-      } */
+    /* 
+     if (typeof DeviceMotionEvent.requestPermission === 'function') {
+         DeviceMotionEvent.requestPermission()
+           .then(permissionState => {
+             if (permissionState === 'granted') {
+               window.addEventListener('devicemotion', () => {});
+             }
+           })
+           .catch(console.error);
+       } else {
+         // handle regular non iOS 13+ devices
+       } */
 
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
     startMicrophoneInput()
@@ -108,10 +119,14 @@ $("#slave").click(function () {
 });
 
 $("#master").click(function () {
+    $("body").append("<div id='start'>Start Playing</div>");
     console.log("👨🏼‍🌾 I'm the MASTER now")
+    mySketch = new p5(masterSketch)
     socket.emit('imMaster', peer.id)
 });
+$("#start").click(function () {
 
+})
 // Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
 // Reference to an output container, use 'pre' styling for JSON output
 var output = document.createElement('console');
@@ -152,22 +167,22 @@ function startMicrophoneInput() {
             script_processor_fft_node = null,
             analyserNode = null;
 
-       
-            navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
-            if (navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({  audio: true, video: false })
+
+        navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
                 .then(function (stream) {
                     start_microphone(stream);    //Display the video stream in the video object
-                 })
-                 .catch(function (e) { logError(e.name + ": " + e.message); });
-            }
-            else {
-            navigator.getMic({ audio: true, video: false }, 
-                 function (stream) {
-                    start_microphone(stream);     
-                 }, 
-                 function (e) { console.log("⛔ Microphone  is not accessible."+ e); });
-            }
+                })
+                .catch(function (e) { logError(e.name + ": " + e.message); });
+        }
+        else {
+            navigator.getMic({ audio: true, video: false },
+                function (stream) {
+                    start_microphone(stream);
+                },
+                function (e) { console.log("⛔ Microphone  is not accessible." + e); });
+        }
 
         // ---
 
@@ -237,5 +252,5 @@ function startMicrophoneInput() {
 
     }();//  webaudio_tooling_obj = function()
 
-    
+
 }
