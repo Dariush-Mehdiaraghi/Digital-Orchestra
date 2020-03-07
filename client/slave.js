@@ -58,7 +58,7 @@ let slaveSketch = function (p) {
                 if (!hasMaster) {
                     socket.emit('foundFreq', frequencyFound)
                 }
-                console.log(frequencyFound)
+                console.log("〰️ foud frequency: "+ frequencyFound+"Hz")
 
                 //window.navigator.vibrate([200, 100, 200]);
             }
