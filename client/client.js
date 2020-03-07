@@ -229,8 +229,8 @@ function startMicrophoneInput() {
             script_processor_fft_node.connect(gain_node);
 
             analyserNode = audioContext.createAnalyser();
-            analyserNode.smoothingTimeConstant = 0.9;
-            analyserNode.minDecibels = -80;
+            analyserNode.smoothingTimeConstant = 0.7;
+           // analyserNode.minDecibels = -80;
             analyserNode.fftSize = BUFF_SIZE;
 
             microphone_stream.connect(analyserNode);
