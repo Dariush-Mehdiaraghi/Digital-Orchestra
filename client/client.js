@@ -89,7 +89,7 @@ $(".ping").click(function () {
 });
 
 $("#slave").click(function () {
-    
+   /* 
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
         DeviceMotionEvent.requestPermission()
           .then(permissionState => {
@@ -100,30 +100,48 @@ $("#slave").click(function () {
           .catch(console.error);
       } else {
         // handle regular non iOS 13+ devices
-      }
+      } */
 
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
+    startMicrophoneInput()
     mySketch = new p5(slaveSketch)
-    /*
-    audioContext = new AudioContext();
-    const handleSuccess = function(stream) {
-   
-        streamObj = audioContext.createMediaStreamSource(stream);
-        console.log("Stream active: "+ streamObj.mediaStream.active)
-        
-        
-      };
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(handleSuccess)
-    .catch(function(err) {
-       console.log("Catch of getUserMedia " + err)
-      });
-   */
+});
+
+$("#master").click(function () {
+    console.log("👨🏼‍🌾 I'm the MASTER now")
+    socket.emit('imMaster', peer.id)
+});
+
+// Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
+// Reference to an output container, use 'pre' styling for JSON output
+var output = document.createElement('console');
+document.body.appendChild(output);
+
+// Reference to native method(s)
+var oldLog = console.log;
+
+console.log = function (...items) {
+
+    // Call native method first
+    oldLog.apply(this, items);
+
+    // Use JSON to transform objects, all others display normally
+    items.forEach((item, i) => {
+        items[i] = (typeof item === 'object' ? JSON.stringify(item, null, 4) : item);
+    });
+    output.innerHTML += items.join(' ') + '<br />';
+    output.scrollTop = output.scrollHeight;
+};
+//end of mobile console
+
+
+function startMicrophoneInput() {
+
     var webaudio_tooling_obj = function () {
 
         var audioContext = new AudioContext();
 
-        console.log("audio is starting up ...");
+        console.log("🎙️ Mic is starting up ...");
 
         var BUFF_SIZE = 16384;
 
@@ -135,14 +153,6 @@ $("#slave").click(function () {
             analyserNode = null;
 
        
-
-           /* navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-            .then(function (stream) {
-                start_microphone(stream);
-            }).catch(function (e) {
-                alert('Error capturing audio.');
-            });
-*/
             navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
             if (navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({  audio: true, video: false })
@@ -154,9 +164,9 @@ $("#slave").click(function () {
             else {
             navigator.getMic({ audio: true, video: false }, 
                  function (stream) {
-                    start_microphone(stream);     //Display the video stream in the video object
+                    start_microphone(stream);     
                  }, 
-                 function (e) { console.log("Microphone  is not accessible."+ e); });
+                 function (e) { console.log("⛔ Microphone  is not accessible."+ e); });
             }
 
         // ---
@@ -214,7 +224,6 @@ $("#slave").click(function () {
 
             script_processor_fft_node.onaudioprocess = function () {
                 analyserNode.smoothingTimeConstant = 0.8
-                // get the average for the first channel
                 // let spectrum = new Uint8Array(analyserNode.frequencyBinCount);
                 analyserNode.getByteFrequencyData(spectrum);
                 // console.log( analyserNode.frequencyBinCount)
@@ -228,32 +237,5 @@ $("#slave").click(function () {
 
     }();//  webaudio_tooling_obj = function()
 
-});
-
-$("#master").click(function () {
-    console.log("👨🏼‍🌾 I'm the MASTER now")
-    socket.emit('imMaster', peer.id)
-});
-
-// Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
-// Reference to an output container, use 'pre' styling for JSON output
-var output = document.createElement('console');
-document.body.appendChild(output);
-
-// Reference to native method(s)
-var oldLog = console.log;
-
-console.log = function (...items) {
-
-    // Call native method first
-    oldLog.apply(this, items);
-
-    // Use JSON to transform objects, all others display normally
-    items.forEach((item, i) => {
-        items[i] = (typeof item === 'object' ? JSON.stringify(item, null, 4) : item);
-    });
-    output.innerHTML += items.join(' ') + '<br />';
-    output.scrollTop = output.scrollHeight;
-};
-//end of mobile console
-
+    
+}

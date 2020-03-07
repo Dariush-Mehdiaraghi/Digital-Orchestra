@@ -5,7 +5,7 @@ let spectrum = new Uint8Array(8192);
 let frequencyFound
 
 let slaveSketch = function (p) {
-    console.log("p5 skectch first Line started")
+   
     p.mic;
     p.fft;
     p.peakBuffer = []
@@ -13,7 +13,6 @@ let slaveSketch = function (p) {
     p.peakDuration = 80
     p.peakMinAmp = 50
     p.setup = function () {
-        console.log("setup started")
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
@@ -31,11 +30,12 @@ let slaveSketch = function (p) {
 
     p.draw = function () {
 
-     /*     p.stroke(0)
+   //  /*     
+        p.stroke(0)
         p.background(255);
         // let spectrum = p.fft.analyze();
         //console.log(spectrum)
-        //at what index of energies is the max?*/
+        //at what index of energies is the max? //*/
         let indexOfMaxValue = indexOfMax(spectrum);
         let peakFreq = Math.round(indexOfMaxValue * (p.sampleRate() / 2) / spectrum.length)
         if (peakFreq != undefined && peakFreq > 0) {
@@ -51,7 +51,8 @@ let slaveSketch = function (p) {
                 (bufferSum / (p.peakBuffer.length - 1)) == peakFreq &&
                 peakFreq > 0 &&
                 spectrum[indexOfMaxValue] > p.peakMinAmp &&
-                frequencyFound != peakFreq
+                frequencyFound != peakFreq &&
+                peakFreq > 1900
             ) {
                 frequencyFound = peakFreq
                 console.log(frequencyFound)
@@ -60,7 +61,8 @@ let slaveSketch = function (p) {
 
 
         }
-        /*  p.beginShape();
+       // /* 
+         p.beginShape();
         for (i = 0; i < spectrum.length; i++) {
             p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
         }
@@ -73,7 +75,7 @@ let slaveSketch = function (p) {
             p.noFill()
             p.ellipse(indexOfMaxValue, p.map(spectrum[indexOfMaxValue], 0, 255, p.height, 0), spectrum[indexOfMaxValue] * 0.3);
 
-        } */
+        } //*/
     }
     function windowResized() {
         p.resizeCanvas(p.windowWidth, p.windowHeight * 0.5);
