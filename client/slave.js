@@ -28,7 +28,7 @@ let slaveSketch = function (p) {
     }
 
     p.draw = function () {
-       
+        p.text("Sketch is running", 10,10)
         p.stroke(0)
         p.background(255);
         let spectrum = p.fft.analyze();
