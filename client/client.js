@@ -143,7 +143,21 @@ $("#slave").click(function () {
                 alert('Error capturing audio.');
             });
 
-      
+            navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
+            if (navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({  audio: true, video: false })
+                .then(function (stream) {
+                    start_microphone(stream);    //Display the video stream in the video object
+                 })
+                 .catch(function (e) { logError(e.name + ": " + e.message); });
+            }
+            else {
+            navigator.getMic({ audio: true, video: false }, 
+                 function (stream) {
+                    start_microphone(stream);     //Display the video stream in the video object
+                 }, 
+                 function () { logError("Microphone  is not accessible."); });
+            }
 
         // ---
 
