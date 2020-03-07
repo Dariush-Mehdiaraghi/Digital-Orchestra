@@ -1,6 +1,6 @@
 let streamObj
 let audioContext = window.AudioContext || window.webkitAudioContext;;
-let spectrum = new Uint8Array(8192);
+let spectrum = new Uint8Array(2048);
 
 let frequencyFound
 
@@ -176,7 +176,7 @@ var webaudio_tooling_obj = function () {
         analyserNode = audioContext.createAnalyser();
         analyserNode.smoothingTimeConstant = 0.9;
         analyserNode.minDecibels = -80;
-        analyserNode.fftSize = 16384;
+        analyserNode.fftSize = 4096;
 
         microphone_stream.connect(analyserNode);
 
@@ -187,7 +187,7 @@ var webaudio_tooling_obj = function () {
             // get the average for the first channel
             // let spectrum = new Uint8Array(analyserNode.frequencyBinCount);
             analyserNode.getByteFrequencyData(spectrum);
-            // console.log( analyserNode.frequencyBinCount)
+           // console.log( analyserNode.frequencyBinCount)
             // draw the spectrogram
             /* if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
      
