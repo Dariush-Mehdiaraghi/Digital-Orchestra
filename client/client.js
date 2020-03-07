@@ -136,13 +136,13 @@ $("#slave").click(function () {
 
        
 
-            navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+           /* navigator.mediaDevices.getUserMedia({ audio: true, video: false })
             .then(function (stream) {
                 start_microphone(stream);
             }).catch(function (e) {
                 alert('Error capturing audio.');
             });
-
+*/
             navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
             if (navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({  audio: true, video: false })
