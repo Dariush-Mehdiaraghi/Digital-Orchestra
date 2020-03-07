@@ -96,7 +96,7 @@ $("#slave").click(function () {
         streamObj = audioContext.createMediaStreamSource(stream);
         console.log("Stream active: "+ streamObj.mediaStream.active)
         mySketch = new p5(slaveSketch)
-        mySketch.loop();
+        
       };
       navigator.mediaDevices.getUserMedia({ audio: true, video: false })
     .then(handleSuccess)

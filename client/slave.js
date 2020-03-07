@@ -28,9 +28,11 @@ let slaveSketch = function (p) {
     }
 
     p.draw = function () {
-        p.text("Sketch is running", 10,10)
+      
         p.stroke(0)
         p.background(255);
+        p.fill(50)
+        p.text("Sketch is running", 100,100)
         let spectrum = p.fft.analyze();
         //console.log(spectrum)
         //at what index of energies is the max?
