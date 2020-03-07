@@ -55,7 +55,7 @@ let slaveSketch = function (p) {
             ) {
                 frequencyFound = peakFreq
                 console.log(frequencyFound)
-                window.navigator.vibrate([200, 100, 200]);
+                //window.navigator.vibrate([200, 100, 200]);
             }
 
 
