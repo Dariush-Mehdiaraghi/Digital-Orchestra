@@ -90,6 +90,7 @@ $(".ping").click(function () {
 
 $("#slave").click(function () {
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
+    
     audioContext = new AudioContext();
     const handleSuccess = function(stream) {
    

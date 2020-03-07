@@ -1,8 +1,8 @@
 let streamObj
-let audioContext;
+let audioContext = window.AudioContext || window.webkitAudioContext;;
 
 
-let frequencyFound
+let frequencyFound  
 
 let slaveSketch = function (p) {
     console.log("p5 skectch first Line started")
