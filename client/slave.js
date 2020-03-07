@@ -44,7 +44,6 @@ let slaveSketch = function (p) {
         //console.log(spectrum)
         //at what index of energies is the max?
         let indexOfMaxValue = indexOfMax(spectrum);
-        console.log(indexOfMaxValue)
         let peakFreq = Math.round(indexOfMaxValue * (p.sampleRate() / 2) / spectrum.length)
         if (peakFreq != undefined && peakFreq > 0) {
             p.peakBuffer[p.peakCount % 50] = peakFreq
