@@ -1,6 +1,6 @@
 let streamObj
 let audioContext = window.AudioContext || window.webkitAudioContext;;
-let spectrum = new Uint8Array(2048);
+let spectrum = new Uint8Array(8192);
 
 let frequencyFound
 
@@ -31,8 +31,8 @@ let slaveSketch = function (p) {
 
     p.draw = function () {
 
-      /*  p.stroke(0)
-        p.background(255);*/
+        p.stroke(0)
+        p.background(255);
         // let spectrum = p.fft.analyze();
         //console.log(spectrum)
         //at what index of energies is the max?
@@ -59,13 +59,13 @@ let slaveSketch = function (p) {
             }
 
 
-        }/*
+        }
         p.beginShape();
         for (i = 0; i < spectrum.length; i++) {
             p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
         }
         p.endShape();
-        if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
+       /* if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
             p.fill(50)
             p.text("Amp: " + spectrum[indexOfMaxValue], indexOfMaxValue, p.height / 2)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
@@ -73,8 +73,7 @@ let slaveSketch = function (p) {
             p.noFill()
             p.ellipse(indexOfMaxValue, p.map(spectrum[indexOfMaxValue], 0, 255, p.height, 0), spectrum[indexOfMaxValue] * 0.3);
 
-        }
-        */
+        } */
     }
     function windowResized() {
         p.resizeCanvas(p.windowWidth, p.windowHeight * 0.5);
@@ -104,7 +103,7 @@ var webaudio_tooling_obj = function () {
 
     console.log("audio is starting up ...");
 
-    var BUFF_SIZE = 4096;
+    var BUFF_SIZE = 16384;
 
     var audioInput = null,
         microphone_stream = null,
@@ -177,7 +176,7 @@ var webaudio_tooling_obj = function () {
         analyserNode = audioContext.createAnalyser();
         analyserNode.smoothingTimeConstant = 0.9;
         analyserNode.minDecibels = -80;
-        analyserNode.fftSize = 4096;
+        analyserNode.fftSize = BUFF_SIZE;
 
         microphone_stream.connect(analyserNode);
 
@@ -188,7 +187,7 @@ var webaudio_tooling_obj = function () {
             // get the average for the first channel
             // let spectrum = new Uint8Array(analyserNode.frequencyBinCount);
             analyserNode.getByteFrequencyData(spectrum);
-           // console.log( analyserNode.frequencyBinCount)
+            // console.log( analyserNode.frequencyBinCount)
             // draw the spectrogram
             /* if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
      
