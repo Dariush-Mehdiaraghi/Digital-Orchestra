@@ -17,7 +17,8 @@ let slaveSketch = function (p) {
         p.noFill();
         p.pixelDensity(2);
         p.mic = new p5.AudioIn();
-     
+        p.mic.amplitude.audioContext = audioContext
+       
         p.mic.start();
         p.mic.stream = streamObj
         p.fft = new p5.FFT(); //good is : 0.8, 16384
