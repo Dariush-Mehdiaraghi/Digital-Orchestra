@@ -16,6 +16,8 @@ let slaveSketch = function (p) {
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
+        p.osc = new p5.Oscillator('sine');
+        p.osc.freq(frequencyFound);
         /* p.mic = new p5.AudioIn();
          p.mic.amplitude.audioContext = audioContext
         
@@ -42,6 +44,11 @@ let slaveSketch = function (p) {
             p.peakBuffer[p.peakCount % p.peakDuration] = peakFreq
             p.peakCount++
         }
+        if (hasMaster) {
+            p.osc.start();
+            playing = true;
+           
+        }
         //console.log(p.frameCount%50)
         let bufferSum = 0;
 
@@ -52,13 +59,12 @@ let slaveSketch = function (p) {
                 peakFreq > 0 &&
                 spectrum[indexOfMaxValue] > p.peakMinAmp &&
                 frequencyFound != peakFreq &&
-                peakFreq > 1900
+                peakFreq > 1900 &&
+                !hasMaster
             ) {
                 frequencyFound = peakFreq
-                if (!hasMaster) {
-                    socket.emit('foundFreq', frequencyFound)
-                }
-                console.log("〰️ foud frequency: "+ frequencyFound+"Hz")
+                socket.emit('foundFreq', frequencyFound)
+                console.log("〰️ foud frequency: " + frequencyFound + "Hz")
 
                 //window.navigator.vibrate([200, 100, 200]);
             }
@@ -103,7 +109,7 @@ let slaveSketch = function (p) {
         return maxIndex;
     }
     function round_to_precision(x, precision) {
-        var y = +x + (precision === undefined ? 0.5 : precision/2);
+        var y = +x + (precision === undefined ? 0.5 : precision / 2);
         return y - (y % (precision === undefined ? 1 : +precision));
     }
 }
