@@ -1,8 +1,8 @@
 let streamObj
 let audioContext = window.AudioContext || window.webkitAudioContext;;
+let spectrum = new Uint8Array(8192);
 
-
-let frequencyFound  
+let frequencyFound
 
 let slaveSketch = function (p) {
     console.log("p5 skectch first Line started")
@@ -10,48 +10,47 @@ let slaveSketch = function (p) {
     p.fft;
     p.peakBuffer = []
     p.peakCount = 0
-    
+    p.peakDuration = 80
+    p.peakMinAmp = 50
     p.setup = function () {
         console.log("setup started")
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
-        p.mic = new p5.AudioIn();
-        p.mic.amplitude.audioContext = audioContext
-       
-        p.mic.start();
-        p.mic.stream = streamObj
-        p.fft = new p5.FFT(); //good is : 0.8, 16384
-        p.fft.smooth(0.9)
-        p.fft.setInput(p.mic);
+        /* p.mic = new p5.AudioIn();
+         p.mic.amplitude.audioContext = audioContext
+        
+         p.mic.start();
+         p.mic.stream = streamObj
+         p.fft = new p5.FFT(); //good is : 0.8, 16384
+         p.fft.smooth(0.9)
+         p.fft.setInput(p.mic); */
 
         //p.noLoop()
     }
 
     p.draw = function () {
-      
+
         p.stroke(0)
         p.background(255);
-        p.fill(50)
-        p.text("Sketch is running", 100,100)
-        let spectrum = p.fft.analyze();
+        // let spectrum = p.fft.analyze();
         //console.log(spectrum)
         //at what index of energies is the max?
         let indexOfMaxValue = indexOfMax(spectrum);
         let peakFreq = Math.round(indexOfMaxValue * (p.sampleRate() / 2) / spectrum.length)
         if (peakFreq != undefined && peakFreq > 0) {
-            p.peakBuffer[p.peakCount % 50] = peakFreq
+            p.peakBuffer[p.peakCount % p.peakDuration] = peakFreq
             p.peakCount++
         }
         //console.log(p.frameCount%50)
         let bufferSum = 0;
 
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < p.peakDuration; i++) {
             bufferSum += p.peakBuffer[i];
             if (
                 (bufferSum / (p.peakBuffer.length - 1)) == peakFreq &&
                 peakFreq > 0 &&
-                spectrum[indexOfMaxValue] > 50 &&
+                spectrum[indexOfMaxValue] > p.peakMinAmp &&
                 frequencyFound != peakFreq
             ) {
                 frequencyFound = peakFreq
@@ -66,15 +65,14 @@ let slaveSketch = function (p) {
             p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
         }
         p.endShape();
-        if (spectrum[indexOfMaxValue] > 50) {
-    
+        if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
             p.fill(50)
             p.text("Amp: " + spectrum[indexOfMaxValue], indexOfMaxValue, p.height / 2)
-            if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10)}
+            if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
             p.text("Freq: " + peakFreq, indexOfMaxValue, p.height / 2.4) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
             p.noFill()
             p.ellipse(indexOfMaxValue, p.map(spectrum[indexOfMaxValue], 0, 255, p.height, 0), spectrum[indexOfMaxValue] * 0.3);
-       
+
         }
     }
     function windowResized() {
@@ -115,18 +113,18 @@ var webaudio_tooling_obj = function () {
         analyserNode = null;
 
     if (!navigator.getUserMedia)
-            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-                          navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
-    if (navigator.getUserMedia){
+    if (navigator.getUserMedia) {
 
-        navigator.getUserMedia({audio:true}, 
-          function(stream) {
-              start_microphone(stream);
-          },
-          function(e) {
-            alert('Error capturing audio.');
-          }
+        navigator.getUserMedia({ audio: true },
+            function (stream) {
+                start_microphone(stream);
+            },
+            function (e) {
+                alert('Error capturing audio.');
+            }
         );
 
     } else { alert('getUserMedia not supported in this browser.'); }
@@ -139,10 +137,9 @@ var webaudio_tooling_obj = function () {
         var index = 0;
         var max_index = num_row_to_display;
 
-        console.log("__________ " + label);
+        // console.log("__________ " + label);
 
         for (; index < max_index && index < size_buffer; index += 1) {
-
             console.log(given_typed_array[index]);
         }
     }
@@ -158,48 +155,45 @@ var webaudio_tooling_obj = function () {
         show_some_data(microphone_output_buffer, 5, "from getChannelData");
     }
 
-    function start_microphone(stream){
+    function start_microphone(stream) {
 
-      gain_node = audioContext.createGain();
-      gain_node.connect( audioContext.destination );
+        gain_node = audioContext.createGain();
+        gain_node.connect(audioContext.destination);
 
-      microphone_stream = audioContext.createMediaStreamSource(stream);
-      microphone_stream.connect(gain_node); 
+        microphone_stream = audioContext.createMediaStreamSource(stream);
 
-      script_processor_node = audioContext.createScriptProcessor(BUFF_SIZE, 1, 1);
-      script_processor_node.onaudioprocess = process_microphone_buffer;
+        script_processor_node = audioContext.createScriptProcessor(BUFF_SIZE, 1, 1);
+        script_processor_node.onaudioprocess = process_microphone_buffer;
 
-      microphone_stream.connect(script_processor_node);
+        microphone_stream.connect(script_processor_node);
 
-      // --- enable volume control for output speakers
 
-    
+        // --- setup FFT
 
-      // --- setup FFT
+        script_processor_fft_node = audioContext.createScriptProcessor(1024, 1, 1);
+        script_processor_fft_node.connect(gain_node);
 
-      script_processor_fft_node = audioContext.createScriptProcessor(2048, 1, 1);
-      script_processor_fft_node.connect(gain_node);
+        analyserNode = audioContext.createAnalyser();
+        analyserNode.smoothingTimeConstant = 0.9;
+        analyserNode.minDecibels = -80;
+        analyserNode.fftSize = 16384;
 
-      analyserNode = audioContext.createAnalyser();
-      analyserNode.smoothingTimeConstant = 0;
-      analyserNode.fftSize = 2048;
+        microphone_stream.connect(analyserNode);
 
-      microphone_stream.connect(analyserNode);
+        analyserNode.connect(script_processor_fft_node);
 
-      analyserNode.connect(script_processor_fft_node);
-
-      script_processor_fft_node.onaudioprocess = function() {
-
-        // get the average for the first channel
-        var array = new Uint8Array(analyserNode.frequencyBinCount);
-        analyserNode.getByteFrequencyData(array);
-
-        // draw the spectrogram
-        if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
-
-            show_some_data(array, 5, "from fft");
-        }
-      };
+        script_processor_fft_node.onaudioprocess = function () {
+            analyserNode.smoothingTimeConstant = 0.8
+            // get the average for the first channel
+            // let spectrum = new Uint8Array(analyserNode.frequencyBinCount);
+            analyserNode.getByteFrequencyData(spectrum);
+            // console.log( analyserNode.frequencyBinCount)
+            // draw the spectrogram
+            /* if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
+     
+                 show_some_data(spectrum, 5, "from fft");
+             }*/
+        };
     }
 
-  }(); //  webaudio_tooling_obj = function()
+}(); //  webaudio_tooling_obj = function()

@@ -90,14 +90,14 @@ $(".ping").click(function () {
 
 $("#slave").click(function () {
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
-   
+    mySketch = new p5(slaveSketch)
     /*
     audioContext = new AudioContext();
     const handleSuccess = function(stream) {
    
         streamObj = audioContext.createMediaStreamSource(stream);
         console.log("Stream active: "+ streamObj.mediaStream.active)
-        mySketch = new p5(slaveSketch)
+        
         
       };
       navigator.mediaDevices.getUserMedia({ audio: true, video: false })
