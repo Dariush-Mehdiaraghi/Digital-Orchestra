@@ -11,7 +11,6 @@ let masterSketch = function (p) {
         playing = true;
     }
     p.draw = function () {
-        p.circle(10,10,10)
         if (playing) {
             // smooth the transitions by 0.1 seconds
             p.osc.freq(frequencyToPlay);
