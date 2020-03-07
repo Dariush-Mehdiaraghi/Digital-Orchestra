@@ -103,7 +103,7 @@ var webaudio_tooling_obj = function () {
 
     console.log("audio is starting up ...");
 
-    var BUFF_SIZE = 16384;
+    var BUFF_SIZE = 4096;
 
     var audioInput = null,
         microphone_stream = null,
