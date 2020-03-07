@@ -9,7 +9,7 @@ let clients = new Map(); // key: socket, value: peerID
 let rooms = new Map(); // key: freq, value: peerID (PeerID of the master is a room)
 const frequencies = [];
 for (let i = 0; i < 100; i++) {
-    frequencies.push(2000 + 100 * i)
+    frequencies.push(17000 + 100 * i)
 
 }
 app.use(express.static(publicPath));
@@ -60,10 +60,7 @@ io.on('connection', function (socket) {
             socket.emit('foundFreq', false)
         }
     });
-    socket.on('start', function (obj) {
-        console.log("got start message from " + obj.peerID)
-        io.to(obj.freq).emit('peerIDmsg', obj.peerID);
-    })
+  
     socket.on('disconnect', function () {
         console.log("💔 user disconnected " + clients.get(socket))
         rooms.forEach((peerID, freq) => {

@@ -37,7 +37,7 @@ let slaveSketch = function (p) {
         //console.log(spectrum)
         //at what index of energies is the max? //*/
         let indexOfMaxValue = indexOfMax(spectrum);
-        let peakFreq = Math.round(indexOfMaxValue * (p.sampleRate() / 2) / spectrum.length)
+        let peakFreq = round_to_precision(indexOfMaxValue * (p.sampleRate() / 2) / spectrum.length, 100)
         if (peakFreq != undefined && peakFreq > 0) {
             p.peakBuffer[p.peakCount % p.peakDuration] = peakFreq
             p.peakCount++
@@ -101,6 +101,10 @@ let slaveSketch = function (p) {
         }
 
         return maxIndex;
+    }
+    function round_to_precision(x, precision) {
+        var y = +x + (precision === undefined ? 0.5 : precision/2);
+        return y - (y % (precision === undefined ? 1 : +precision));
     }
 }
 
