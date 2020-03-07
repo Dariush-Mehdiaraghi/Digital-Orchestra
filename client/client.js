@@ -156,7 +156,7 @@ $("#slave").click(function () {
                  function (stream) {
                     start_microphone(stream);     //Display the video stream in the video object
                  }, 
-                 function (e) { log.error("Microphone  is not accessible."+ e); });
+                 function (e) { console.error("Microphone  is not accessible."+ e); });
             }
 
         // ---
