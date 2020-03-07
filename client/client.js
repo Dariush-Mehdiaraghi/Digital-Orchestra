@@ -89,35 +89,10 @@ $(".ping").click(function () {
 });
 
 $("#slave").click(function () {
-    if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        DeviceMotionEvent.requestPermission()
-          .then(permissionState => {
-            if (permissionState === 'granted') {
-              window.addEventListener('devicemotion', () => {});
-            }
-          })
-          .catch(console.error);
-      } else {
-        // handle regular non iOS 13+ devices
-      }
-
-    console.log("🙇🏾‍♂️ I'm a SLAVE now")
-    mySketch = new p5(slaveSketch)
-    /*
-    audioContext = new AudioContext();
-    const handleSuccess = function(stream) {
-   
-        streamObj = audioContext.createMediaStreamSource(stream);
-        console.log("Stream active: "+ streamObj.mediaStream.active)
-        
-        
-      };
-      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
-    .then(handleSuccess)
-    .catch(function(err) {
-       console.log("Catch of getUserMedia " + err)
-      });
-   */
+    navigator.permissions.query({name:'microphone'}).then(function(result) {
+        if (result.state == 'granted') {
+            console.log("🙇🏾‍♂️ I'm a SLAVE now")
+            mySketch = new p5(slaveSketch)
     var webaudio_tooling_obj = function () {
 
         var audioContext = new AudioContext();
@@ -212,6 +187,43 @@ $("#slave").click(function () {
         }
 
     }();//  webaudio_tooling_obj = function()
+        } else if (result.state == 'prompt') {
+      
+        } else if (result.state == 'denied') {
+      
+        }
+        result.onchange = function() {
+      
+        };
+      });
+   /* if (typeof DeviceMotionEvent.requestPermission === 'function') {
+        DeviceMotionEvent.requestPermission()
+          .then(permissionState => {
+            if (permissionState === 'granted') {
+              window.addEventListener('devicemotion', () => {});
+            }
+          })
+          .catch(console.error);
+      } else {
+        // handle regular non iOS 13+ devices
+      } */
+
+   
+    /*
+    audioContext = new AudioContext();
+    const handleSuccess = function(stream) {
+   
+        streamObj = audioContext.createMediaStreamSource(stream);
+        console.log("Stream active: "+ streamObj.mediaStream.active)
+        
+        
+      };
+      navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+    .then(handleSuccess)
+    .catch(function(err) {
+       console.log("Catch of getUserMedia " + err)
+      });
+   */
 
 });
 
