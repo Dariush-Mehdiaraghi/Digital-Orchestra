@@ -31,8 +31,8 @@ let slaveSketch = function (p) {
 
     p.draw = function () {
 
-        p.stroke(0)
-        p.background(255);
+      /*  p.stroke(0)
+        p.background(255);*/
         // let spectrum = p.fft.analyze();
         //console.log(spectrum)
         //at what index of energies is the max?
@@ -59,7 +59,7 @@ let slaveSketch = function (p) {
             }
 
 
-        }
+        }/*
         p.beginShape();
         for (i = 0; i < spectrum.length; i++) {
             p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
@@ -74,6 +74,7 @@ let slaveSketch = function (p) {
             p.ellipse(indexOfMaxValue, p.map(spectrum[indexOfMaxValue], 0, 255, p.height, 0), spectrum[indexOfMaxValue] * 0.3);
 
         }
+        */
     }
     function windowResized() {
         p.resizeCanvas(p.windowWidth, p.windowHeight * 0.5);
