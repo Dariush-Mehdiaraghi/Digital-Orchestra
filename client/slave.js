@@ -16,8 +16,8 @@ let slaveSketch = function (p) {
         p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
         p.noFill();
         p.pixelDensity(2);
-        p.osc = new p5.Oscillator('sine');
-        p.osc.freq(frequencyFound);
+      //  p.osc = new p5.Oscillator('sine');
+       // p.osc.freq(frequencyFound);
         /* p.mic = new p5.AudioIn();
          p.mic.amplitude.audioContext = audioContext
         
@@ -44,11 +44,7 @@ let slaveSketch = function (p) {
             p.peakBuffer[p.peakCount % p.peakDuration] = peakFreq
             p.peakCount++
         }
-        if (hasMaster) {
-            p.osc.start();
-            playing = true;
-           
-        }
+        
         //console.log(p.frameCount%50)
         let bufferSum = 0;
 
