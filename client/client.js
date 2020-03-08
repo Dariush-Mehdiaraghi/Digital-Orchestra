@@ -7,8 +7,7 @@ let mySketch;
 let hasMaster = false
 
 socket.on('peerIDmsg-Other', function (msg) {
-    let peerIDs = connections.map((connection) => { return connection.peer }) //checking if we already have this Connection
-    if (!peerIDs.includes(msg)) {
+    if (!alreadyHaveConnection(msg)) {
         let conn = peer.connect(msg);
         setupConn(conn);
     }
@@ -21,8 +20,8 @@ socket.on('foundFreq', function (room) {
     if (room != false) {
         hasMaster = true
         console.log("👨‍👩‍👧‍👦 I have joined the room of " + room)
-        let peerIDs = connections.map((connection) => { return connection.peer }) //checking if we already have this Connection
-        if (!peerIDs.includes(room)) {
+        if (!alreadyHaveConnection(room)) {
+            console.log("📝 i try to connect with " + room)
             let conn = peer.connect(room);
             setupConn(conn);
         }
@@ -60,14 +59,21 @@ function setupConn(recivedConn) {
                 conn.send("pong")
                 console.log("🏓 pong!")
             }
-            if (data == "pong") {
+            else if (data == "pong") {
                 let timeTook = performance.now() - timeOnSend
                 console.log("🏓 Ping pong took " + timeTook + "ms")
                 // $("body").append(`<div class="ping">Ping took this long : ${timeTook}</div>`)
             }
+            else if (data.note != undefined) {
+                console.log("🎵 recived note:" + data.note+" of length:"+ data.length)
+                player.start()
+            }
+            else {
+                ts.receive(conn.peer, data);
+            }
         });
         // $("body").append(`<div class="msg" id="${conn.peer}">I'm connected to: ${conn.peer}</div>`)
-        console.log("💞 I now have a open connection to " + conn.peer);
+        console.log("💞 I now have an open connection to: " + conn.peer);
     })
     conn.on('close', function () {
         console.log("💔 Connection lost to " + conn.peer)
@@ -78,7 +84,13 @@ function setupConn(recivedConn) {
     })
 
 }
-
+function broadcastToAllConn(msg) {
+    if (connections.length != 0) {
+        connections.forEach(conn => {
+            conn.send(msg);
+        })
+    }
+}
 
 $("body").append("<div class='ping'>ping</div>");
 
@@ -95,7 +107,7 @@ $(".ping").click(function () {
         });
     }
     else {
-        $(".ping").text("Sorry I got no connection to a other Peer :( Try again by klicking on me!");
+        $(".ping").text("Sorry I got no connection to an other Peer :( Try again by klicking on me!");
     }
 });
 
@@ -119,14 +131,17 @@ $("#slave").click(function () {
 });
 
 $("#master").click(function () {
-    $("body").append("<div id='start'>Start Playing</div>");
+    $("body").append("<div id='start'>Send Notes</div>");
+    $("#start").click(function () {
+        mySketch.remove();
+        note = { note: 'C4', lenght: '8n' }
+        broadcastToAllConn(note)
+    })
     console.log("👨🏼‍🌾 I'm the MASTER now")
     mySketch = new p5(masterSketch)
     socket.emit('imMaster', peer.id)
 });
-$("#start").click(function () {
 
-})
 // Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
 // Reference to an output container, use 'pre' styling for JSON output
 var output = document.createElement('console');
@@ -148,6 +163,73 @@ console.log = function (...items) {
     output.scrollTop = output.scrollHeight;
 };
 //end of mobile console
+
+
+//Time sync Example form https://github.com/enmasseio/timesync/blob/master/examples/advanced/peerjs/client.js
+let timesync = require('timesync')
+/**
+ * Create a peer with id, and connect to the given peers
+ * @param {string} id
+ * @param {string[]} peers
+ * @return {{peer: Window.Peer, ts: Object}} Returns an object with the
+ *                                           created peer and the timesync
+ */
+var domSystemTime = document.getElementById('systemTime');
+var domSyncTime = document.getElementById('syncTime');
+var domOffset = document.getElementById('offset');
+var domSyncing = document.getElementById('syncing');
+
+var ts = timesync.create({
+    peers: [], // start empty, will be updated at the start of every synchronization
+    interval: 5000,
+    delay: 200,
+    timeout: 1000
+});
+
+ts.on('sync', function (state) {
+    console.log('sync ' + state);
+    if (state == 'start') {
+        ts.options.peers = openConnections();
+        console.log('syncing with peers [' + ts.options.peers.join(', ') + ']');
+        if (ts.options.peers.length) {
+            domSyncing.innerHTML = 'syncing with ' + ts.options.peers.join(', ') + '...';
+        }
+    }
+    if (state == 'end') {
+        domSyncing.innerHTML = '';
+    }
+});
+
+ts.on('change', function (offset) {
+    console.log('changed offset: ' + offset);
+    domOffset.innerHTML = offset.toFixed(1) + ' ms';
+});
+
+ts.send = function (id, data, timeout) {
+    //console.log('send', id, data);
+    var all = peer.connections[id];
+    var conn = all && all.filter(function (conn) {
+        return conn.open;
+    })[0];
+
+    if (conn) {
+        conn.send(data);
+    }
+    else {
+        console.log(new Error('Cannot send message: not connected to ' + id).toString());
+    }
+
+    // Ignoring timeouts
+    return Promise.resolve();
+};
+
+// show the system time and synced time once a second on screen
+setInterval(function () {
+    domSystemTime.innerHTML = new Date().toISOString().replace(/[A-Z]/g, ' ');
+    domSyncTime.innerHTML = new Date(ts.now()).toISOString().replace(/[A-Z]/g, ' ');
+}, 1000);
+
+//end of timesync
 
 
 function startMicrophoneInput() {
@@ -230,7 +312,7 @@ function startMicrophoneInput() {
 
             analyserNode = audioContext.createAnalyser();
             analyserNode.smoothingTimeConstant = 0.7;
-           // analyserNode.minDecibels = -80;
+            // analyserNode.minDecibels = -80;
             analyserNode.fftSize = BUFF_SIZE;
 
             microphone_stream.connect(analyserNode);

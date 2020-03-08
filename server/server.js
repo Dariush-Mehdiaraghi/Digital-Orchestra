@@ -44,7 +44,7 @@ io.on('connection', function (socket) {
             else {
                 rooms.set(freq, peerID);
                 socket.emit('frequencyToPlay', freq);
-                console.log("👨‍👩‍👧‍👦 Room created with " + peerID + " as Master with " + freq + "Hz")
+                console.log("👨‍👩‍👧‍👦 Room created with " + peerID + " as Master playing at " + freq + "Hz")
 
             }
         }

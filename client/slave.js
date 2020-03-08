@@ -13,11 +13,11 @@ let slaveSketch = function (p) {
     p.peakDuration = 80
     p.peakMinAmp = 50
     p.setup = function () {
-        p.createCanvas(p.windowWidth, p.windowHeight * 0.5);
+        p.createCanvas(p.windowHeight, p. windowWidth * 0.5);
         p.noFill();
         p.pixelDensity(2);
-      //  p.osc = new p5.Oscillator('sine');
-       // p.osc.freq(frequencyFound);
+         p.osc = new p5.Oscillator('sine');
+         p.osc.freq(frequencyFound);
         /* p.mic = new p5.AudioIn();
          p.mic.amplitude.audioContext = audioContext
         
@@ -110,4 +110,4 @@ let slaveSketch = function (p) {
     }
 }
 
-
+let player = new Tone.Player("./audio/Metal_Hit3.WAV").toMaster();

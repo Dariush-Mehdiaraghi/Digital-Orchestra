@@ -2,7 +2,7 @@
 :root{
     font-family: 'Anonymous Pro' ;
     text-transform: uppercase;
-    font-size: 24px;
+    font-size: 48px;
 }
 body{
     margin: 0;
@@ -11,6 +11,11 @@ body{
 }
 .msg{
     color: 	#f9a800;
+}
+.p5Canvas{
+    z-index: -2;
+    transform: rotate(-90deg);
+
 }
 /*
 @media only screen and (min-width: 600px) {
