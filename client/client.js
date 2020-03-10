@@ -69,7 +69,7 @@ function setupConn(recivedConn) {
                 player.start()
             }
             else {
-                ts.receive(conn.peer, data);
+               // ts.receive(conn.peer, data);
             }
         });
         // $("body").append(`<div class="msg" id="${conn.peer}">I'm connected to: ${conn.peer}</div>`)

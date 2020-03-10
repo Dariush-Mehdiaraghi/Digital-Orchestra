@@ -1,5 +1,5 @@
 let streamObj
-let audioContext = window.AudioContext || window.webkitAudioContext;;
+let audioContext = window.AudioContext || window.webkitAudioContext;
 let spectrum = new Uint8Array(8192);
 
 let frequencyFound
