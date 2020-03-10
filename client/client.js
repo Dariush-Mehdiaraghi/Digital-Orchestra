@@ -23,7 +23,7 @@ socket.on('foundFreq', function (room) {
         if (!alreadyHaveConnection(room)) {
             
             let conn = peer.connect(room);
-            console.log("💌 I recived a Connection Object from: " + recivedConn.peer);
+            console.log("💌 I recived a Connection Object from: " + conn.peer);
             setupConn(conn);
         }
     }
