@@ -21,13 +21,15 @@ socket.on('foundFreq', function (room) {
         hasMaster = true
         console.log("👨‍👩‍👧‍👦 I have joined the room of " + room)
         if (!alreadyHaveConnection(room)) {
-            console.log("📝 i try to connect with " + room)
+            
             let conn = peer.connect(room);
+            console.log("💌 I recived a Connection Object from: " + recivedConn.peer);
             setupConn(conn);
         }
     }
 })
 peer.on('connection', function (recivedConn) {
+    console.log("I recived this connection: "+ recivedConn.peer+ " I already have it: "+ alreadyHaveConnection(recivedConn))
     if (!alreadyHaveConnection(recivedConn)) {
         setupConn(recivedConn);
     }
@@ -48,7 +50,6 @@ function alreadyHaveConnection(newConnection) { //checking if we already have th
 }
 
 function setupConn(recivedConn) {
-    console.log("💌 I recived a Connection Object from: " + recivedConn.peer);
     connections.push(recivedConn);
     let conn = recivedConn;
     conn.on('open', function () {
