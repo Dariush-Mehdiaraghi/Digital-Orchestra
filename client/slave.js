@@ -12,8 +12,9 @@ let slaveSketch = function (p) {
     p.peakCount = 0
     p.peakDuration = 80
     p.peakMinAmp = 50
+    p.specScale = 8
     p.setup = function () {
-        p.createCanvas(p.windowHeight, p. windowWidth * 0.5);
+        p.createCanvas(p.windowWidth, p.windowHeight);
         p.noFill();
         p.pixelDensity(2);
          p.osc = new p5.Oscillator('sine');
@@ -68,18 +69,26 @@ let slaveSketch = function (p) {
 
         }
         // /* 
+       
         p.beginShape();
+        let x = 0;
         for (i = 0; i < spectrum.length; i++) {
-            p.vertex(i, p.map(spectrum[i], 0, 255, p.height, 0));
+            if (x<spectrum.length-p.specScale) {
+                x += p.specScale ;
+            }
+            p.vertex(p.map(spectrum[x], 0, 255, p.width, 0),i);
+          
+
         }
         p.endShape();
+
         if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
             p.fill(50)
-            p.text("Amp: " + spectrum[indexOfMaxValue], indexOfMaxValue, p.height / 2)
+            p.text("Amp: " + spectrum[indexOfMaxValue], p.widht / 2,indexOfMaxValue/p.specScale)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
-            p.text("Freq: " + peakFreq, indexOfMaxValue, p.height / 2.4) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
+            p.text("Freq: " + peakFreq, p.width / 2.4, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
             p.noFill()
-            p.ellipse(indexOfMaxValue, p.map(spectrum[indexOfMaxValue], 0, 255, p.height, 0), spectrum[indexOfMaxValue] * 0.3);
+            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
 
         } //*/
     }

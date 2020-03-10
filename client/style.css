@@ -14,7 +14,8 @@ body{
 }
 .p5Canvas{
     z-index: -2;
-    transform: rotate(-90deg);
+    position: absolute;
+  /* transform: rotate(-90deg);*/
 
 }
 /*
@@ -26,6 +27,6 @@ console{
     width: 100%;
     position: absolute;
     bottom: 0;
-    font-size: 0.5rem;
-    max-height: 20%;
+    font-size: 0.3rem;
+    max-height: 33%;
 }
