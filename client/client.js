@@ -1,4 +1,7 @@
-var peer = new Peer({ key: 'lwjd5qra8257b9' }); //maybe you should get yer own key eh?
+//var peer = new Peer({ key: 'lwjd5qra8257b9' }); //maybe you should get yer own key eh?
+let peer = new Peer(null, {
+    debug: 2
+});
 const socket = io();
 let connections = [];
 let timeOnSend;
