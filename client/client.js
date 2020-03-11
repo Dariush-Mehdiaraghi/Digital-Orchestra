@@ -67,7 +67,7 @@ function setupConn(recivedConn) {
                 // $("body").append(`<div class="ping">Ping took this long : ${timeTook}</div>`)
             }
             else if (data.note != undefined) {
-                console.log("🎵 recived note:" + data.note+" of length:"+ data.length)
+                console.log("🎵 recived note:" + data.note+" of length: "+ data.length)
                 player.start()
             }
             else {
@@ -136,6 +136,10 @@ $("#master").click(function () {
     $("body").append("<div id='start'>Send Notes</div>");
     $("#start").click(function () {
         mySketch.remove();
+        connections.forEach(conn => {
+            createSequencer(conn)
+        });
+       
         note = { note: 'C4', lenght: '8n' }
         broadcastToAllConn(note)
     })

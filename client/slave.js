@@ -61,7 +61,7 @@ let slaveSketch = function (p) {
             ) {
                 frequencyFound = peakFreq
                 socket.emit('foundFreq', frequencyFound)
-                console.log("〰️ foud frequency: " + frequencyFound + "Hz")
+                console.log("〰️ found frequency: " + frequencyFound + "Hz")
 
                 //window.navigator.vibrate([200, 100, 200]);
             }
