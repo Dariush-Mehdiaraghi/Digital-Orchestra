@@ -8,7 +8,7 @@ let hasMaster = false
 
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
-        let conn = peer.connect(msg);
+        let conn = peer.connect(msg, {serialization: 'json'});
         setupConn(conn);
     }
 })
@@ -53,6 +53,7 @@ function setupConn(recivedConn) {
     connections.push(recivedConn);
     let conn = recivedConn;
     conn.on('open', function () {
+
         conn.send("Hi my Peer ID is: " + peer.id);
         conn.on('data', function (data) {
             console.log('📬 Received: ', data);
