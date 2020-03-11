@@ -8,7 +8,7 @@ let hasMaster = false
 
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
-        let conn = peer.connect(msg, {serialization: 'json'});
+        let conn = peer.connect(msg, {serialization: "json"});
         setupConn(conn);
     }
 })
@@ -22,7 +22,7 @@ socket.on('foundFreq', function (room) {
         console.log("👨‍👩‍👧‍👦 I have joined the room of " + room)
         if (!alreadyHaveConnection(room)) {
             
-            let conn = peer.connect(room);
+            let conn = peer.connect(room, {serialization: "json"});
             console.log("💌 I recived a Connection Object from: " + conn.peer);
             setupConn(conn);
         }
