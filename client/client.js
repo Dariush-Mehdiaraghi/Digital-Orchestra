@@ -8,7 +8,7 @@ let timeOnSend;
 let myRole;
 let mySketch;
 let hasMaster = false
-
+let ts
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
         let conn = peer.connect(msg, {serialization: "json"});
@@ -56,10 +56,10 @@ function setupConn(recivedConn) {
     connections.push(recivedConn);
     let conn = recivedConn;
     conn.on('open', function () {
-
+        obj = connect(conn.peer)
         conn.send("Hi my Peer ID is: " + peer.id);
         conn.on('data', function (data) {
-            console.log('📬 Received: ', data);
+           // console.log('📬 Received: ', data);
             if (data == "ping") {
                 conn.send("pong")
                 console.log("🏓 pong!")
@@ -73,8 +73,8 @@ function setupConn(recivedConn) {
                 console.log("🎵 recived note:" + data.note+" of length: "+ data.length)
                 player.start()
             }
-            else {
-               // ts.receive(conn.peer, data);
+            else{
+                ts.receive(conn.peer, data);
             }
         });
         // $("body").append(`<div class="msg" id="${conn.peer}">I'm connected to: ${conn.peer}</div>`)
@@ -146,6 +146,7 @@ $("#master").click(function () {
         note = { note: 'C4', lenght: '8n' }
         broadcastToAllConn(note)
     })
+    myRole = "master"
     console.log("👨🏼‍🌾 I'm the MASTER now")
     mySketch = new p5(masterSketch)
     socket.emit('imMaster', peer.id)
@@ -174,8 +175,7 @@ console.log = function (...items) {
 //end of mobile console
 
 
-//Time sync Example form https://github.com/enmasseio/timesync/blob/master/examples/advanced/peerjs/client.js
-let timesync = require('timesync')
+//Refactored Time sync Example form https://github.com/enmasseio/timesync/blob/master/examples/advanced/peerjs/client.js
 /**
  * Create a peer with id, and connect to the given peers
  * @param {string} id
@@ -183,59 +183,70 @@ let timesync = require('timesync')
  * @return {{peer: Window.Peer, ts: Object}} Returns an object with the
  *                                           created peer and the timesync
  */
-var domSystemTime = document.getElementById('systemTime');
-var domSyncTime = document.getElementById('syncTime');
-var domOffset = document.getElementById('offset');
-var domSyncing = document.getElementById('syncing');
+function connect(id, peers) {
+    var domSystemTime = document.getElementById('systemTime');
+    var domSyncTime   = document.getElementById('syncTime');
+    var domOffset     = document.getElementById('offset');
+    var domSyncing    = document.getElementById('syncing');
+   let peersFromconn = connections.map((conn)=>{
+        return  conn.peer
+      })
+     ts = timesync.create({
+      peers: peersFromconn, 
+      interval: 5000,
 
-var ts = timesync.create({
-    peers: [], // start empty, will be updated at the start of every synchronization
-    interval: 5000,
-    delay: 200,
-    timeout: 1000
-});
-
-ts.on('sync', function (state) {
-    console.log('sync ' + state);
-    if (state == 'start') {
-        ts.options.peers = openConnections();
-        console.log('syncing with peers [' + ts.options.peers.join(', ') + ']');
+      timeout: 1000
+    });
+  
+    ts.on('sync', function (state) {
+      //console.log('sync ' + state);
+      if (state == 'start') {
+        ts.options.peers = peersFromconn;
+       // console.log('syncing with peers [' + ts.options.peers + ']');
         if (ts.options.peers.length) {
-            domSyncing.innerHTML = 'syncing with ' + ts.options.peers.join(', ') + '...';
+          domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
         }
-    }
-    if (state == 'end') {
+      }
+      if (state == 'end') {
         domSyncing.innerHTML = '';
-    }
-});
-
-ts.on('change', function (offset) {
-    console.log('changed offset: ' + offset);
-    domOffset.innerHTML = offset.toFixed(1) + ' ms';
-});
-
-ts.send = function (id, data, timeout) {
-    //console.log('send', id, data);
-    var all = peer.connections[id];
-    var conn = all && all.filter(function (conn) {
+      }
+    });
+  
+    ts.on('change', function (offset) {
+     // console.log('changed offset: ' + offset);
+      domOffset.innerHTML = offset.toFixed(1) + ' ms';
+    });
+  
+    ts.send = function (id, data, timeout) {
+      //console.log('send', id, data);
+      var all = peer.connections[id];
+      var conn = all && all.filter(function (conn) {
         return conn.open;
-    })[0];
-
-    if (conn) {
+      })[0];
+  
+      if (conn) {
         conn.send(data);
-    }
-    else {
+      }
+      else {
         console.log(new Error('Cannot send message: not connected to ' + id).toString());
-    }
-
-    // Ignoring timeouts
-    return Promise.resolve();
-};
-
-// show the system time and synced time once a second on screen
-setInterval(function () {
-    domSystemTime.innerHTML = new Date().toISOString().replace(/[A-Z]/g, ' ');
-    domSyncTime.innerHTML = new Date(ts.now()).toISOString().replace(/[A-Z]/g, ' ');
-}, 1000);
+      }
+  
+      // Ignoring timeouts
+      return Promise.resolve();
+    };
+  
+    // show the system time and synced time once a second on screen
+    setInterval(function () {
+      domSystemTime.innerHTML = new Date().toISOString().replace(/[A-Z]/g, ' ');
+      domSyncTime.innerHTML   = new Date(ts.now()).toISOString().replace(/[A-Z]/g, ' ');
+    }, 1000);
+  
+    
+  
+    return {
+      peer: peer,
+      ts: ts
+    };
+  }
 
 //end of timesync

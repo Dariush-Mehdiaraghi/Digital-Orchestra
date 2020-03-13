@@ -1,10 +1,17 @@
 const express = require('express')
 const app = express()
+
+let timesyncServer = require('timesync/server');
+
+
+
+
 const http = require('http').createServer(app);
 const port = process.env.PORT || 3000;
 const path = require("path");
 const io = require('socket.io')(http);
 const publicPath = path.join(__dirname + '/../client');
+
 let clients = new Map(); // key: socket, value: peerID
 let rooms = new Map(); // key: freq, value: peerID (PeerID of the master is a room)
 const frequencies = [];
@@ -12,7 +19,13 @@ for (let i = 0; i < 100; i++) {
     frequencies.push(2000 + 100 * i)
 
 }
+
+
 app.use(express.static(publicPath));
+app.use('/timesync', timesyncServer.requestHandler);
+
+
+
 
 io.on('connection', function (socket) {
 

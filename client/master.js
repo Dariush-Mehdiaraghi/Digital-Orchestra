@@ -20,6 +20,7 @@ let masterSketch = function (p) {
 
 }
 function createSequencer(conn) {
+    $("body").append()
     //setup a polyphonic sampler
     var keys = new Tone.Players({
         "A": "./audio/casio/A1.[mp3|ogg]",

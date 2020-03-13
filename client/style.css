@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Anonymous+Pro&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap');
 :root{
-    font-family: 'Anonymous Pro' ;
+    font-family: 'Cutive Mono', monospace;
     text-transform: uppercase;
     font-size: 48px;
 }
 body{
     margin: 0;
     display: flex;
-   flex-direction: column;
+    flex-direction: column;
 }
 .msg{
     color: 	#f9a800;
@@ -17,6 +18,12 @@ body{
     position: absolute;
   /* transform: rotate(-90deg);*/
 
+}
+.timesync{
+    font-size: 0.3rem; 
+    text-align: left; 
+    color: grey;
+    
 }
 /*
 @media only screen and (min-width: 600px) {

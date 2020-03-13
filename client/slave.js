@@ -76,7 +76,7 @@ let slaveSketch = function (p) {
             if (x<spectrum.length-p.specScale) {
                 x += p.specScale ;
             }
-            p.vertex(p.map(spectrum[x], 0, 255, p.width, 0),i);
+            p.vertex(p.map(spectrum[x], 0, 255, p.width/2, 0),i);
           
 
         }
@@ -84,11 +84,11 @@ let slaveSketch = function (p) {
 
         if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
             p.fill(50)
-            p.text("Amp: " + spectrum[indexOfMaxValue], p.widht / 2,indexOfMaxValue/p.specScale)
+            p.text("Amp: " + spectrum[indexOfMaxValue], p.width / 2,indexOfMaxValue/p.specScale)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
             p.text("Freq: " + peakFreq, p.width / 2.4, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
             p.noFill()
-            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
+            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width/2, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
 
         } //*/
     }
