@@ -92,7 +92,7 @@ function setupConn(recivedConn) {
                 }
             }
             else if (data.time != undefined) {
-                polySynth.triggerAttackRelease(data.notes, "64n")//, data.time)
+                polySynth.triggerAttackRelease(data.notes, "64n", data.time)//, data.time)
                 console.log("🎵 recived note:" + data.notes + " with time: " + data.time)
                 //player.start()
             }
