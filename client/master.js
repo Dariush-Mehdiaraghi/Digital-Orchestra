@@ -51,7 +51,7 @@ function createSequencer(conn) {
             }
         }
         if (notesToPlay.length != 0) {
-            conn.send({ "notes": notesToPlay, "time": time+1 })
+            conn.send({ "notes": notesToPlay, "time": time+2})
         }
         //polySynth.triggerAttackRelease(notesToPlay, "32n", time)
         index++;
