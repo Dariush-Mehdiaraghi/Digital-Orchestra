@@ -168,6 +168,7 @@ $("#master").click(function () {
 
 function setupSlave() {
     startMicrophoneInput()
+    Tone.start();
     myRole = "slave"
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
 
@@ -180,6 +181,7 @@ function setupMaster() {
     socket.emit('imMaster', peer.id)
     $("body").append("<div id='start'>Create Sequencers</div>");
     $("#start").click(function () {
+        Tone.start();
         $('tone-step-sequencer').remove()
         mySketch.remove();
         broadcastToAllConn("startPlaying")
