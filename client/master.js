@@ -1,7 +1,7 @@
 let frequencyToPlay;
 let playing
 let masterSketch = function (p) {
-
+    p.role = "master";
     p.setup = function () {
         p.osc = new p5.Oscillator('sine');
         p.playOscillator()
@@ -20,42 +20,48 @@ let masterSketch = function (p) {
 
 }
 function createSequencer(conn) {
-    $("body").append()
-    //setup a polyphonic sampler
-    var keys = new Tone.Players({
-        "A": "./audio/casio/A1.[mp3|ogg]",
-        "C#": "./audio/casio/Cs2.[mp3|ogg]",
-        "E": "./audio/casio/E2.[mp3|ogg]",
-        "F#": "./audio/casio/Fs2.[mp3|ogg]",
-    }, {
-        "volume": -10,
-        "fadeOut": "64n",
-    }).toMaster();
+    let seqLength = 16;
 
-    //the notes
-    var noteNames = ["F#", "E", "C#", "A"];
+    let noteNames = ["F#3", "E3", "C#3", "A3"];
+    let noteCount = noteNames.length
+    $("body").append("<div class='tone-step-sequencer'></div>")
+    for (let j = 0; j < noteCount; j++) {
+        $(".tone-step-sequencer").last().append("<div class='seqRow'></div>")
+        for (let i = 0; i < seqLength; i++) {
+            $(".seqRow").last().append(`<input type='checkbox' class="column-${i}"/>`) //every column has same selector
+        }
+    }
 
-    var loop = new Tone.Sequence(function (time, col) {
-        var column = document.querySelector("tone-step-sequencer").currentColumn;
-        column.forEach(function (val, i) {
-            if (val) {
-                //slightly randomized velocities
-                var vel = Math.random() * 0.5 + 0.5;
-                keys.get(noteNames[i]).start(time, 0, "32n", 0, vel);
+    //setup a polyphonic synth
+  //  let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
+
+
+    Tone.Transport.scheduleRepeat(loop, "32n")
+    Tone.Transport.start()
+    let index = 0
+
+    function loop(time) {
+        let step = index % seqLength
+        // console.log("looping")
+        let column = $(`.column-${step}`)
+        let notesToPlay = []
+        for (let i = 0; i < column.length; i++) {
+            if (column[i].checked) {
+                notesToPlay.push(noteNames[i])
             }
-        });
-        //set the column on the correct draw frame
-        Tone.Draw.schedule(function () {
-            document.querySelector("tone-step-sequencer").setAttribute("highlight", col);
-        }, time);
-    }, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], "16n").start(0);
+        }
+        if (notesToPlay.length != 0) {
+            conn.send({ "notes": notesToPlay, "time": time })
+        }
+        //polySynth.triggerAttackRelease(notesToPlay, "32n", time)
+        index++;
 
-    //bind the interface
-    document.querySelector("tone-transport").bind(Tone.Transport);
+    };
 
-    Tone.Transport.on("stop", () => {
-        setTimeout(() => {
-            document.querySelector("tone-step-sequencer").setAttribute("highlight", "-1");
-        }, 100);
-    });
 }
+
+        //set the column on the correct draw frame
+/*Tone.Draw.schedule(function () {
+    document.querySelector("tone-step-sequencer").setAttribute("highlight", col);
+}, time);*/
+

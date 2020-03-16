@@ -5,7 +5,7 @@ let spectrum = new Uint8Array(8192);
 let frequencyFound
 
 let slaveSketch = function (p) {
-
+    p.role = "slave";
     p.mic;
     p.fft;
     p.peakBuffer = []
@@ -76,7 +76,7 @@ let slaveSketch = function (p) {
             if (x<spectrum.length-p.specScale) {
                 x += p.specScale ;
             }
-            p.vertex(p.map(spectrum[x], 0, 255, p.width/2, 0),i);
+            p.vertex(p.map(spectrum[x], 0, 255, p.width, 0),i);
           
 
         }
@@ -88,7 +88,7 @@ let slaveSketch = function (p) {
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
             p.text("Freq: " + peakFreq, p.width / 2.4, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
             p.noFill()
-            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width/2, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
+            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
 
         } //*/
     }
@@ -213,4 +213,4 @@ function startMicrophoneInput() {
 
 }
 
-let player = new Tone.Player("./audio/Metal_Hit3.WAV").toMaster();
+//let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();

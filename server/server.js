@@ -25,8 +25,6 @@ app.use(express.static(publicPath));
 app.use('/timesync', timesyncServer.requestHandler);
 
 
-
-
 io.on('connection', function (socket) {
 
     socket.on('peerIDmsg', function (peerID) {
@@ -63,6 +61,15 @@ io.on('connection', function (socket) {
         }
 
     });
+    socket.on('imNotMaster', function () {
+        rooms.forEach((peerID, freq) => {
+            if (peerID == clients.get(socket)) {
+                rooms.delete(freq);
+                console.log("😵😵 deleted Room from Master: " + peerID);
+            }
+        })
+
+    })
     socket.on('foundFreq', function (freq) {
         if (rooms.has(freq)) {
             let room = rooms.get(freq)
@@ -89,5 +96,5 @@ io.on('connection', function (socket) {
     });
 });
 
-http.listen(port, () => console.log(`👂 Example app listening on port ${port}!`));
+http.listen(port, () => console.log(`👂 App listening on port ${port}!`));
 
