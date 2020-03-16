@@ -87,6 +87,7 @@ function setupConn(recivedConn) {
             }
             else if (data == "startPlaying") {
                 if (polySynth == undefined) {
+                    Tone.Transport.start()
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
                     mySketch.remove();
                 }
