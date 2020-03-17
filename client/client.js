@@ -10,6 +10,7 @@ let mySketch;
 let hasMaster = false
 let polySynth
 let ts
+let delta
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
         let conn = peer.connect(msg, { serialization: "json" });
@@ -76,14 +77,15 @@ function setupConn(recivedConn) {
         conn.send("Hi my Peer ID is: " + peer.id);
         conn.on('data', function (data) {
             // console.log('📬 Received: ', data);
-            if (data == "ping") {
-                conn.send("pong")
-                console.log("🏓 pong!")
-            }
-            else if (data == "pong") {
-                let timeTook = performance.now() - timeOnSend
-                console.log("🏓 Ping pong took " + timeTook + "ms")
-                // $("body").append(`<div class="ping">Ping took this long : ${timeTook}</div>`)
+
+            if (data.time != undefined) {
+                if (delta == undefined) {
+                    delta = data.time - Tone.now() //Diffrence between our time and the incoming notes time. Set once to have a constant offset in time
+                }
+                let timeOffset = data.time - delta + 0.8
+                polySynth.triggerAttackRelease(data.notes, "64n", timeOffset)//, data.time)
+                console.log("🎵 recived note with time: " + data.time + " time with Offset: " + timeOffset)
+                //player.start()
             }
             else if (data == "startPlaying") {
                 if (polySynth == undefined) {
@@ -92,11 +94,20 @@ function setupConn(recivedConn) {
                     mySketch.remove();
                 }
             }
-            else if (data.time != undefined) {
-                polySynth.triggerAttackRelease(data.notes, "64n", data.time)//, data.time)
-                console.log("🎵 recived note:" + data.notes + " with time: " + data.time)
-                //player.start()
+
+            else if (data == "pong") {
+                let timeTook = performance.now() - timeOnSend
+                console.log("🏓 Ping pong took " + timeTook + "ms")
+                // $("body").append(`<div class="ping">Ping took this long : ${timeTook}</div>`)
             }
+
+            else if (data == "ping") {
+                conn.send("pong")
+                console.log("🏓 pong!")
+            }
+
+
+
             else {
                 //ts.receive(conn.peer, data);
             }
@@ -169,7 +180,7 @@ $("#master").click(function () {
 
 function setupSlave() {
     startMicrophoneInput()
-    Tone.start();
+    Tone.start("+0.1");
     myRole = "slave"
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
 
@@ -182,9 +193,10 @@ function setupMaster() {
     socket.emit('imMaster', peer.id)
     $("body").append("<div id='start'>Create Sequencers</div>");
     $("#start").click(function () {
-        Tone.start();
+
         $('tone-step-sequencer').remove()
         mySketch.remove();
+        Tone.Transport.start()
         broadcastToAllConn("startPlaying")
         connections.forEach(conn => {
             createSequencer(conn)
@@ -225,69 +237,69 @@ console.log = function (...items) {
  *                                           created peer and the timesync
  *//*
 function connect(id, peers) {
- var domSystemTime = document.getElementById('systemTime');
- var domSyncTime = document.getElementById('syncTime');
- var domOffset = document.getElementById('offset');
- var domSyncing = document.getElementById('syncing');
- let peersFromconn = connections.map((conn) => {
-     return conn.peer
- })
- ts = timesync.create({
-     peers: peersFromconn,
-     interval: 5000,
+var domSystemTime = document.getElementById('systemTime');
+var domSyncTime = document.getElementById('syncTime');
+var domOffset = document.getElementById('offset');
+var domSyncing = document.getElementById('syncing');
+let peersFromconn = connections.map((conn) => {
+return conn.peer
+})
+ts = timesync.create({
+peers: peersFromconn,
+interval: 5000,
 
-     timeout: 1000
- });
+timeout: 1000
+});
 
- ts.on('sync', function (state) {
-     //console.log('sync ' + state);
-     if (state == 'start') {
-         ts.options.peers = peersFromconn;
-         // console.log('syncing with peers [' + ts.options.peers + ']');
-         if (ts.options.peers.length) {
-             domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
-         }
-     }
-     if (state == 'end') {
-         domSyncing.innerHTML = '';
-     }
- });
+ts.on('sync', function (state) {
+//console.log('sync ' + state);
+if (state == 'start') {
+    ts.options.peers = peersFromconn;
+    // console.log('syncing with peers [' + ts.options.peers + ']');
+    if (ts.options.peers.length) {
+        domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
+    }
+}
+if (state == 'end') {
+    domSyncing.innerHTML = '';
+}
+});
 
- ts.on('change', function (offset) {
-     // console.log('changed offset: ' + offset);
-     domOffset.innerHTML = offset.toFixed(1) + ' ms';
- });
+ts.on('change', function (offset) {
+// console.log('changed offset: ' + offset);
+domOffset.innerHTML = offset.toFixed(1) + ' ms';
+});
 
- ts.send = function (id, data, timeout) {
-     //console.log('send', id, data);
-     var all = peer.connections[id];
-     var conn = all && all.filter(function (conn) {
-         return conn.open;
-     })[0];
+ts.send = function (id, data, timeout) {
+//console.log('send', id, data);
+var all = peer.connections[id];
+var conn = all && all.filter(function (conn) {
+    return conn.open;
+})[0];
 
-     if (conn) {
-         conn.send(data);
-     }
-     else {
-         console.log(new Error('Cannot send message: not connected to ' + id).toString());
-     }
+if (conn) {
+    conn.send(data);
+}
+else {
+    console.log(new Error('Cannot send message: not connected to ' + id).toString());
+}
 
-     // Ignoring timeouts
-     return Promise.resolve();
- };
+// Ignoring timeouts
+return Promise.resolve();
+};
 
- // show the system time and synced time once a second on screen
- setInterval(function () {
-     domSystemTime.innerHTML = new Date().toISOString().replace(/[A-Z]/g, ' ');
-     domSyncTime.innerHTML = new Date(ts.now()).toISOString().replace(/[A-Z]/g, ' ');
- }, 1000);
+// show the system time and synced time once a second on screen
+setInterval(function () {
+domSystemTime.innerHTML = new Date().toISOString().replace(/[A-Z]/g, ' ');
+domSyncTime.innerHTML = new Date(ts.now()).toISOString().replace(/[A-Z]/g, ' ');
+}, 1000);
 
 
 
- return {
-     peer: peer,
-     ts: ts
- };
+return {
+peer: peer,
+ts: ts
+};
 }
 */
 //end of timesync

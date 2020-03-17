@@ -24,7 +24,7 @@ function createSequencer(conn) {
 
     let noteNames = ["F#3", "E3", "C#3", "A3"];
     let noteCount = noteNames.length
-    $("body").append("<div class='tone-step-sequencer'></div>")
+    $("body").append(`<div class='tone-step-sequencer' id='sequencer-${conn.peer}'></div>`)
     for (let j = 0; j < noteCount; j++) {
         $(".tone-step-sequencer").last().append("<div class='seqRow'></div>")
         for (let i = 0; i < seqLength; i++) {
@@ -36,8 +36,8 @@ function createSequencer(conn) {
   //  let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
 
 
-    Tone.Transport.scheduleRepeat(loop, "32n")
-    Tone.Transport.start()
+    Tone.Transport.scheduleRepeat(loop, `${seqLength}n`)
+    
     let index = 0
 
     function loop(time) {
@@ -51,7 +51,7 @@ function createSequencer(conn) {
             }
         }
         if (notesToPlay.length != 0) {
-            conn.send({ "notes": notesToPlay, "time": time+4})
+            conn.send({ "notes": notesToPlay, "time": time})
         }
         //polySynth.triggerAttackRelease(notesToPlay, "32n", time)
         index++;
