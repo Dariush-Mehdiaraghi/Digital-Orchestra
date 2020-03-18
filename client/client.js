@@ -11,6 +11,7 @@ let hasMaster = false
 let polySynth
 let ts
 let delta
+let deltaSliderVal = 0
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
         let conn = peer.connect(msg, { serialization: "json" });
@@ -82,9 +83,9 @@ function setupConn(recivedConn) {
                 if (delta == undefined) {
                     delta = data.time - Tone.now() //Diffrence between our time and the incoming notes time. Set once to have a constant offset in time
                 }
-                let timeOffset = data.time - delta + 0.8
-                polySynth.triggerAttackRelease(data.notes, "64n", timeOffset)//, data.time)
-                console.log("🎵 recived note with time: " + data.time + " time with Offset: " + timeOffset)
+                let timeIplay = data.time - delta + 0.8 + deltaSliderVal
+                polySynth.triggerAttackRelease(data.notes, "64n", timeIplay)//, data.time)
+                console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
                 //player.start()
             }
             else if (data == "startPlaying") {
@@ -92,6 +93,15 @@ function setupConn(recivedConn) {
                     Tone.Transport.start()
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
                     mySketch.remove();
+
+                    $("body").append("<div class='deltaSlider-container'></div>")
+                    $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
+                    $(".deltaSlider-container").append('<input type="range" name="deltaSlider" id="deltaSlider" value="0" min="-0.2" max="0.2" step="0.002" />')
+                    $("#deltaSlider").on("input", (e) => {
+                        $(".deltaSlider-display").text(e.target.value * 1000 + " ms")
+                        deltaSliderVal = e.target.value
+                        //console.log("slider value changed " + e.target.value)
+                    })
                 }
             }
 
@@ -116,6 +126,7 @@ function setupConn(recivedConn) {
         console.log("💞 I now have an open connection to: " + conn.peer);
     })
     conn.on('close', function () {
+        if (myRole == "slave") { myRole = undefined } //to be able to load the slave/master sketch
         console.log("💔 Connection lost to " + conn.peer)
         $(`#${conn.peer}`).remove();
         connections = connections.splice(connections.indexOf(conn), 1)
@@ -183,8 +194,10 @@ function setupSlave() {
     Tone.start("+0.1");
     myRole = "slave"
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
-
     mySketch = new p5(slaveSketch)
+
+
+
 }
 function setupMaster() {
     myRole = "master"
@@ -192,8 +205,15 @@ function setupMaster() {
     mySketch = new p5(masterSketch)
     socket.emit('imMaster', peer.id)
     $("body").append("<div id='start'>Create Sequencers</div>");
-    $("#start").click(function () {
-
+    $("#start").click(() => {
+        $("body").append('<div id="playButton">Play</div>')
+        $("#playButton").click((e) => {
+            
+            
+                console.log("start Playing")
+                Tone.Transport.start()
+            
+        })
         $('tone-step-sequencer').remove()
         mySketch.remove();
         Tone.start()
@@ -256,14 +276,14 @@ timeout: 1000
 ts.on('sync', function (state) {
 //console.log('sync ' + state);
 if (state == 'start') {
-   ts.options.peers = peersFromconn;
-   // console.log('syncing with peers [' + ts.options.peers + ']');
-   if (ts.options.peers.length) {
-       domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
-   }
+  ts.options.peers = peersFromconn;
+  // console.log('syncing with peers [' + ts.options.peers + ']');
+  if (ts.options.peers.length) {
+      domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
+  }
 }
 if (state == 'end') {
-   domSyncing.innerHTML = '';
+  domSyncing.innerHTML = '';
 }
 });
 
@@ -276,14 +296,14 @@ ts.send = function (id, data, timeout) {
 //console.log('send', id, data);
 var all = peer.connections[id];
 var conn = all && all.filter(function (conn) {
-   return conn.open;
+  return conn.open;
 })[0];
 
 if (conn) {
-   conn.send(data);
+  conn.send(data);
 }
 else {
-   console.log(new Error('Cannot send message: not connected to ' + id).toString());
+  console.log(new Error('Cannot send message: not connected to ' + id).toString());
 }
 
 // Ignoring timeouts
