@@ -43,7 +43,7 @@ function createSequencer(conn) {
     function loop(time) {
         let step = index % seqLength
         // console.log("looping")
-        let column = $(`.column-${step}`)
+        let column = $(`#sequencer-${conn.peer} .column-${step}`)
         let notesToPlay = []
         for (let i = 0; i < column.length; i++) {
             if (column[i].checked) {

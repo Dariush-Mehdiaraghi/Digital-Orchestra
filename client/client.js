@@ -199,7 +199,9 @@ function setupMaster() {
         Tone.Transport.start()
         broadcastToAllConn("startPlaying")
         connections.forEach(conn => {
+            if(!$(`#sequencer-${conn.peer}`).length){
             createSequencer(conn)
+        }
         });
     })
 
