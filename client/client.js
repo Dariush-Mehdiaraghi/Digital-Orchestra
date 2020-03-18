@@ -196,12 +196,12 @@ function setupMaster() {
 
         $('tone-step-sequencer').remove()
         mySketch.remove();
-        Tone.Transport.start()
+        Tone.start()
         broadcastToAllConn("startPlaying")
         connections.forEach(conn => {
-            if(!$(`#sequencer-${conn.peer}`).length){
-            createSequencer(conn)
-        }
+            if (!$(`#sequencer-${conn.peer}`).length) {
+                createSequencer(conn)
+            }
         });
     })
 
@@ -256,14 +256,14 @@ timeout: 1000
 ts.on('sync', function (state) {
 //console.log('sync ' + state);
 if (state == 'start') {
-    ts.options.peers = peersFromconn;
-    // console.log('syncing with peers [' + ts.options.peers + ']');
-    if (ts.options.peers.length) {
-        domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
-    }
+   ts.options.peers = peersFromconn;
+   // console.log('syncing with peers [' + ts.options.peers + ']');
+   if (ts.options.peers.length) {
+       domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
+   }
 }
 if (state == 'end') {
-    domSyncing.innerHTML = '';
+   domSyncing.innerHTML = '';
 }
 });
 
@@ -276,14 +276,14 @@ ts.send = function (id, data, timeout) {
 //console.log('send', id, data);
 var all = peer.connections[id];
 var conn = all && all.filter(function (conn) {
-    return conn.open;
+   return conn.open;
 })[0];
 
 if (conn) {
-    conn.send(data);
+   conn.send(data);
 }
 else {
-    console.log(new Error('Cannot send message: not connected to ' + id).toString());
+   console.log(new Error('Cannot send message: not connected to ' + id).toString());
 }
 
 // Ignoring timeouts
