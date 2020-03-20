@@ -93,8 +93,8 @@ let slaveSketch = function (p) {
         } //*/
     }
 
-    function windowResized() {
-        p.resizeCanvas(p.windowWidth, p.windowHeight * 0.5);
+  p.windowResized =   function () {
+        p.resizeCanvas(p.windowWidth, p.windowHeight);
     }
     function indexOfMax(arr) {
         if (arr.length === 0) {

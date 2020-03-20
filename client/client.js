@@ -44,10 +44,14 @@ peer.on('connection', function (recivedConn) {
 peer.on('open', function (id) {
     console.log('🆔 My peer ID is: ' + id);
     socket.emit('peerIDmsg', id)
+    appendMasterSlave()
     // $("body").append(`<div>my peer id is: ${id}</div>`)
 });
 peer.on('disconnected', function () {
-    console.log("⚰️ Peer-Server disconnected")
+    console.log("⚰️ Peer-Server disconnected trying to reconnect")
+    $("#master").remove()
+    $("#slave").remove()
+    $("body").append(`<div>Sorry no Peer-server available. Try to Reload the page please :)</div>`)
 });
 
 function alreadyHaveConnection(newConnection) { //checking if we already have this Connection
@@ -144,51 +148,47 @@ function broadcastToAllConn(msg) {
     }
 }
 
+function appendMasterSlave() {
 
+    $("body").append("<div id='master'>Master</div>");
+    $("body").append("<div id='slave'>Slave</div>");
 
-$("body").append("<div id='master'>Master</div>");
-$("body").append("<div id='slave'>Slave</div>");
+    $("#master").click(function () {
 
+        if (myRole == "slave") {
+            mySketch.remove()
+            setupMaster()
+        }
+        else if (myRole != "master") {
+            setupMaster()
+        }
+    });
 
-$("#slave").click(function () {
-    /* 
-     if (typeof DeviceMotionEvent.requestPermission === 'function') {
-         DeviceMotionEvent.requestPermission()
-           .then(permissionState => {
-             if (permissionState === 'granted') {
-               window.addEventListener('devicemotion', () => {});
-             }
-           })
-           .catch(console.error);
-       } else {
-         // handle regular non iOS 13+ devices
-       } */
+    $("#slave").click(function () {
+        /* 
+         if (typeof DeviceMotionEvent.requestPermission === 'function') {
+             DeviceMotionEvent.requestPermission()
+               .then(permissionState => {
+                 if (permissionState === 'granted') {
+                   window.addEventListener('devicemotion', () => {});
+                 }
+               })
+               .catch(console.error);
+           } else {
+             // handle regular non iOS 13+ devices
+           } */
 
-
-
-
-    if (myRole == "master") {
-        $("#start").remove()
-        mySketch.remove()
-        socket.emit('imNotMaster', peer.id)
-        setupSlave()
-    }
-    else if (myRole != "slave") {
-        setupSlave()
-    }
-});
-
-$("#master").click(function () {
-
-    if (myRole == "slave") {
-        mySketch.remove()
-        setupMaster()
-    }
-    else if (myRole != "master") {
-        setupMaster()
-    }
-});
-
+        if (myRole == "master") {
+            $("#start").remove()
+            mySketch.remove()
+            socket.emit('imNotMaster', peer.id)
+            setupSlave()
+        }
+        else if (myRole != "slave") {
+            setupSlave()
+        }
+    });
+}
 function setupSlave() {
     startMicrophoneInput()
     Tone.start("+0.1");
@@ -208,11 +208,11 @@ function setupMaster() {
     $("#start").click(() => {
         $("body").append('<div id="playButton">Play</div>')
         $("#playButton").click((e) => {
-            
-            
-                console.log("start Playing")
-                Tone.Transport.start()
-            
+
+
+            console.log("start Playing")
+            Tone.Transport.start()
+
         })
         $('tone-step-sequencer').remove()
         mySketch.remove();
@@ -276,14 +276,14 @@ timeout: 1000
 ts.on('sync', function (state) {
 //console.log('sync ' + state);
 if (state == 'start') {
-  ts.options.peers = peersFromconn;
-  // console.log('syncing with peers [' + ts.options.peers + ']');
-  if (ts.options.peers.length) {
-      domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
-  }
+ ts.options.peers = peersFromconn;
+ // console.log('syncing with peers [' + ts.options.peers + ']');
+ if (ts.options.peers.length) {
+     domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
+ }
 }
 if (state == 'end') {
-  domSyncing.innerHTML = '';
+ domSyncing.innerHTML = '';
 }
 });
 
@@ -296,14 +296,14 @@ ts.send = function (id, data, timeout) {
 //console.log('send', id, data);
 var all = peer.connections[id];
 var conn = all && all.filter(function (conn) {
-  return conn.open;
+ return conn.open;
 })[0];
 
 if (conn) {
-  conn.send(data);
+ conn.send(data);
 }
 else {
-  console.log(new Error('Cannot send message: not connected to ' + id).toString());
+ console.log(new Error('Cannot send message: not connected to ' + id).toString());
 }
 
 // Ignoring timeouts
