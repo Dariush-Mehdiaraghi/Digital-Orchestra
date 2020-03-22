@@ -51,7 +51,9 @@ peer.on('disconnected', function () {
     console.log("⚰️ Peer-Server disconnected trying to reconnect")
     $("#master").remove()
     $("#slave").remove()
-    $("body").append(`<div>Sorry no Peer-server available. Try to Reload the page please :)</div>`)
+    if (!connections.length) {
+        $("body").append(`<div>Sorry no Peer-server available. Try to Reload the page please :)</div>`)
+    }
 });
 
 function alreadyHaveConnection(newConnection) { //checking if we already have this Connection
@@ -206,13 +208,10 @@ function setupMaster() {
     socket.emit('imMaster', peer.id)
     $("body").append("<div id='start'>Create Sequencers</div>");
     $("#start").click(() => {
-        $("body").append('<div id="playButton">Play</div>')
+        $("body").append("<div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>&#9654;</span></div>")
         $("#playButton").click((e) => {
-
-
             console.log("start Playing")
             Tone.Transport.start()
-
         })
         $('tone-step-sequencer').remove()
         mySketch.remove();
@@ -276,14 +275,14 @@ timeout: 1000
 ts.on('sync', function (state) {
 //console.log('sync ' + state);
 if (state == 'start') {
- ts.options.peers = peersFromconn;
- // console.log('syncing with peers [' + ts.options.peers + ']');
- if (ts.options.peers.length) {
-     domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
- }
+ts.options.peers = peersFromconn;
+// console.log('syncing with peers [' + ts.options.peers + ']');
+if (ts.options.peers.length) {
+    domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
+}
 }
 if (state == 'end') {
- domSyncing.innerHTML = '';
+domSyncing.innerHTML = '';
 }
 });
 
@@ -296,14 +295,14 @@ ts.send = function (id, data, timeout) {
 //console.log('send', id, data);
 var all = peer.connections[id];
 var conn = all && all.filter(function (conn) {
- return conn.open;
+return conn.open;
 })[0];
 
 if (conn) {
- conn.send(data);
+conn.send(data);
 }
 else {
- console.log(new Error('Cannot send message: not connected to ' + id).toString());
+console.log(new Error('Cannot send message: not connected to ' + id).toString());
 }
 
 // Ignoring timeouts
