@@ -20,11 +20,12 @@ let masterSketch = function (p) {
 
 }
 function createSequencer(conn) {
+
     let seqLength = 16
 
     let noteNames = ["F#3", "E3", "C#3", "A3"]
     let noteCount = noteNames.length
-    $("body").append(`<div class='tone-step-sequencer' id='sequencer-${conn.peer}'></div>`)
+    $("#sequencers").append(`<div class='tone-step-sequencer' id='sequencer-${conn.peer}'></div>`)
     for (let j = 0; j < noteCount; j++) {
         $(".tone-step-sequencer").last().append("<div class='seqRow'></div>")
         for (let i = 0; i < seqLength; i++) {

@@ -65,8 +65,25 @@ function setupConn(recivedConn) {
     connections.push(recivedConn);
     let conn = recivedConn;
     conn.on('open', function () {
-        $("body").append("<div class='ping'>ping</div>");
+       
+        if (myRole == "master" && !$(`#sequencer-${conn.peer}`).length) {
+            if(!$("#sequencers").length){
+                $("body").append("<div id='sequencers'></div>")
+                $("#sequencers").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>&#9654;</span></div></div>")
+                $("#playButton").click((e) => {
+                    console.log("start Playing")
+                    Tone.start()
+                    Tone.Transport.start()
+                    mySketch.remove();
+                    broadcastToAllConn("startPlaying")
+                })
+                
+           
+            }
+                createSequencer(conn)
+        }
 
+     /*    $("body").append("<div class='ping'>ping</div>");
         $("div.ping").click(function () {
             console.log("pressed ping")
             if (connections.length != 0) {
@@ -80,8 +97,8 @@ function setupConn(recivedConn) {
             else {
                 $(".ping").text("Sorry I got no connection to an other Peer :( Try again by klicking on me!");
             }
-        });
-        conn.send("Hi my Peer ID is: " + peer.id);
+        }); */
+        //conn.send("Hi my Peer ID is: " + peer.id);
         conn.on('data', function (data) {
             // console.log('📬 Received: ', data);
 
@@ -206,25 +223,9 @@ function setupMaster() {
     console.log("👨🏼‍🌾 I'm the MASTER now")
     mySketch = new p5(masterSketch)
     socket.emit('imMaster', peer.id)
-    $("body").append("<div id='start'>Create Sequencers</div>");
-    $("#start").click(() => {
-        $("body").append("<div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>&#9654;</span></div>")
-        $("#playButton").click((e) => {
-            console.log("start Playing")
-            Tone.Transport.start()
-        })
-        $('tone-step-sequencer').remove()
-        mySketch.remove();
-        Tone.start()
-        broadcastToAllConn("startPlaying")
-        connections.forEach(conn => {
-            if (!$(`#sequencer-${conn.peer}`).length) {
-                createSequencer(conn)
-            }
-        });
-    })
-
+   
 }
+
 
 // Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
 // Reference to an output container, use 'pre' styling for JSON output

@@ -34,16 +34,18 @@ body {
     color: grey;
 }
 
+#master-controls {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
 #playButton .label {
     font-size: 0.5rem;
 }
 
-input[type=checkbox] {
-    visibility: hidden;
-    display: none;
-}
-
 #playButton {
+    float: left;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -55,6 +57,19 @@ input[type=checkbox] {
     margin-bottom: var(--boxMarg);
     margin-left: var(--boxMarg);
     margin-right: var(--boxMarg);
+}
+
+#sequencers {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: min-content;
+    margin: auto;
+}
+
+input[type=checkbox] {
+    visibility: hidden;
+    display: none;
 }
 
 .tone-step-sequencer {
@@ -164,6 +179,6 @@ console {
     width: 100%;
     position: absolute;
     bottom: 0;
-    font-size: 0.3rem;
-    max-height: 33%;
+    font-size: 0.2rem;
+    max-height: 10%;
 }
