@@ -2,11 +2,14 @@
 @import url('https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap');
 :root {
     --grey: #707070;
-    --cbSize: 16px;
+    --cbSize: 14px;
+    --cbLabelSize: 10px;
+    --cbMargin: 5px;
     /*must be teilbar durch 2*/
     --bordRad: calc(var(--cbSize) /2);
     --bordSize: 1px;
-    --boxMarg: 3.5px;
+
+    --boxMarg: 3px;
     font-family: 'Helvetica';
     font-size: 48px;
 }
@@ -78,7 +81,7 @@ input[type=checkbox] {
     width: min-content;
     border: solid var(--bordSize) var(--grey);
     border-radius: var(--bordRad);
-    padding: calc(var(--cbSize)*2/3/2);
+    padding: 5px;
     margin-bottom: var(--boxMarg);
     margin-left: var(--boxMarg);
     margin-right: var(--boxMarg);
@@ -93,10 +96,10 @@ input[type=checkbox] {
     width: var(--cbSize);
     height: var(--cbSize);
     display: flex;
-    margin-top: calc(var(--cbSize)*2/3/2);
-    margin-bottom: calc(var(--cbSize)*2/3/2);
-    margin-left: calc(var(--cbSize)*0.3);
-    margin-right: calc(var(--cbSize)*0.3);
+    margin-top: var(--cbMargin);
+    margin-bottom: var(--cbMargin);
+    margin-left: 3px;
+    margin-right: 3px;
     justify-content: center;
     align-items: center;
     border: solid var(--bordSize) var(--grey);
@@ -109,8 +112,8 @@ input[type=checkbox] {
 .cb-container label {
     position: absolute;
     display: block;
-    width: calc(var(--cbSize) *0.75);
-    height: calc(var(--cbSize)*0.75);
+    width: var(--cbLabelSize);
+    height: var(--cbLabelSize);
     border-radius: 100%;
     cursor: pointer;
     z-index: 1;
