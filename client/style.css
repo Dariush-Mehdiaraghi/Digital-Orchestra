@@ -89,6 +89,7 @@ input[type=checkbox] {
 }
 
 .cb-container {
+    transition: all 0.1s ease-in-out;
     width: var(--cbSize);
     height: var(--cbSize);
     display: flex;

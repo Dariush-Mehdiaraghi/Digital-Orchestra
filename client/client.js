@@ -72,6 +72,7 @@ function setupConn(recivedConn) {
                 $("#sequencers").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>&#9654;</span></div></div>")
                 $("#playButton").click((e) => {
                     console.log("start Playing")
+                  
                     Tone.start()
                     Tone.Transport.start()
                     mySketch.remove();
@@ -108,8 +109,11 @@ function setupConn(recivedConn) {
                 }
                 let timeIplay = data.time - delta + 0.8 + deltaSliderVal
                 polySynth.triggerAttackRelease(data.notes, "64n", timeIplay)//, data.time)
-                console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
+               // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
                 //player.start()
+            }
+            if(data.dlt != undefined){
+                deltasOfSlaves.push(data.dlt)
             }
             else if (data == "startPlaying") {
                 if (polySynth == undefined) {
@@ -149,10 +153,13 @@ function setupConn(recivedConn) {
         console.log("💞 I now have an open connection to: " + conn.peer);
     })
     conn.on('close', function () {
-        if (myRole == "slave") { myRole = undefined } //to be able to load the slave/master sketch
+      
         console.log("💔 Connection lost to " + conn.peer)
-        $(`#${conn.peer}`).remove();
+        $(`#sequencer-${conn.peer}`).remove();
         connections = connections.splice(connections.indexOf(conn), 1)
+
+        if (myRole == "slave") { myRole = undefined } //to be able to load the slave/master sketch
+        if (myRole == "master" && connections.length <=0 ) { myRole = undefined }
     })
     conn.on('error', function (err) {
         console.log("⛔ Connection error: " + err)
