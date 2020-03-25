@@ -7,7 +7,9 @@ let connections = [];
 let timeOnSend;
 let myRole;
 let mySketch;
+let myColor;
 let hasMaster = false
+const colors = ["#FBA500", "#2671BC", "#F15A24", "#096836", "#A344A7", "#00AD99"]
 let polySynth
 let ts
 let delta
@@ -65,54 +67,33 @@ function setupConn(recivedConn) {
     connections.push(recivedConn);
     let conn = recivedConn;
     conn.on('open', function () {
-       
+
         if (myRole == "master" && !$(`#sequencer-${conn.peer}`).length) {
-            if(!$("#sequencers").length){
-                $("body").append("<div id='sequencers'></div>")
-                $("#sequencers").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>Play</span></div></div>")
-                $("#playButton").click((e) => {
-                    console.log("start Playing")
-                   if( $("#playButton .label").html() == "Play"){
-                    $("#playButton .label").html("Stop")
-                    Tone.start()
-                    Tone.Transport.start()
-                  
-                    broadcastToAllConn("startPlaying")
-                   } 
-                   else if($("#playButton .label").html() == "Stop"){
-                    
-                   
-                    Tone.Transport.stop()
-                    $("#playButton .label").html("Play")
-                   }
-                    removeMasterSlave()
-                    mySketch.remove();
-         
-                })
-                
-           
+            if (!$("#sequencers").length) {
+                createMasterControls()
             }
-                createSequencer(conn)
+
+            createSequencer(conn)
         }
 
-     /*    $("body").append("<div class='ping'>ping</div>");
-        $("div.ping").click(function () {
-            console.log("pressed ping")
-            if (connections.length != 0) {
-                connections.forEach(conn => {
-                    // Send messages
-                    console.log("🏓 i send a ping")
-                    timeOnSend = performance.now();
-                    conn.send('ping');
-                });
-            }
-            else {
-                $(".ping").text("Sorry I got no connection to an other Peer :( Try again by klicking on me!");
-            }
-        }); */
+        /*    $("body").append("<div class='ping'>ping</div>");
+           $("div.ping").click(function () {
+               console.log("pressed ping")
+               if (connections.length != 0) {
+                   connections.forEach(conn => {
+                       // Send messages
+                       console.log("🏓 i send a ping")
+                       timeOnSend = performance.now();
+                       conn.send('ping');
+                   });
+               }
+               else {
+                   $(".ping").text("Sorry I got no connection to an other Peer :( Try again by klicking on me!");
+               }
+           }); */
         //conn.send("Hi my Peer ID is: " + peer.id);
         conn.on('data', function (data) {
-            // console.log('📬 Received: ', data);
+           // console.log('📬 Received: ', data);
 
             if (data.time != undefined) {
                 if (delta == undefined) {
@@ -120,12 +101,10 @@ function setupConn(recivedConn) {
                 }
                 let timeIplay = data.time - delta + 0.8 + deltaSliderVal
                 polySynth.triggerAttackRelease(data.notes, "64n", timeIplay)//, data.time)
-               // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
+                // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
                 //player.start()
             }
-            if(data.dlt != undefined){
-                deltasOfSlaves.push(data.dlt)
-            }
+
             else if (data == "startPlaying") {
                 if (polySynth == undefined) {
                     Tone.Transport.start()
@@ -153,7 +132,10 @@ function setupConn(recivedConn) {
                 conn.send("pong")
                 console.log("🏓 pong!")
             }
-
+            else if (data.color != undefined) {
+                myColor = data.color
+                $("#my-color").css("background-color", myColor)
+            }
 
 
             else {
@@ -164,13 +146,30 @@ function setupConn(recivedConn) {
         console.log("💞 I now have an open connection to: " + conn.peer);
     })
     conn.on('close', function () {
-      
+
         console.log("💔 Connection lost to " + conn.peer)
         $(`#sequencer-${conn.peer}`).remove();
-        connections = connections.splice(connections.indexOf(conn), 1)
 
-        if (myRole == "slave") { myRole = undefined } //to be able to load the slave/master sketch
-        if (myRole == "master" && connections.length <=0 ) { myRole = undefined }
+        let i = connections.indexOf(conn);
+        if (i != -1) {
+            connections.splice(i, 1);
+        }
+
+
+        if (myRole == "slave") {
+            myRole = undefined 
+            $("#my-color").css("background-color", "white")
+
+        } 
+        if (myRole == "master") {
+            for (let i = 0; i < connections.length; i++) {
+                const connection = connections[i]
+                const color = { color: colors[i % (colors.length - 1)] };
+                connection.send(color)
+                console.log("sending to " + connection.peer + " this color: " + color)
+            }
+        }
+        if (myRole == "master" && connections.length <= 0) { myRole = undefined }
     })
     conn.on('error', function (err) {
         console.log("⛔ Connection error: " + err)
@@ -230,12 +229,13 @@ function appendMasterSlave() {
     });
 }
 function setupSlave() {
+
     startMicrophoneInput()
     Tone.start("+0.1");
     myRole = "slave"
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
     mySketch = new p5(slaveSketch)
-
+    $("body").append("<div id='my-color'></div>")
 
 
 }
@@ -244,7 +244,7 @@ function setupMaster() {
     console.log("👨🏼‍🌾 I'm the MASTER now")
     mySketch = new p5(masterSketch)
     socket.emit('imMaster', peer.id)
-   
+
 }
 
 
@@ -300,7 +300,7 @@ if (state == 'start') {
 ts.options.peers = peersFromconn;
 // console.log('syncing with peers [' + ts.options.peers + ']');
 if (ts.options.peers.length) {
-    domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
+ domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
 }
 }
 if (state == 'end') {

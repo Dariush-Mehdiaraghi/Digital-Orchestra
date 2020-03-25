@@ -20,12 +20,79 @@ let masterSketch = function (p) {
     }
 
 }
+function createMasterControls() {
+    $("body").append("<div id='sequencers'></div>")
+    $("#sequencers").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>Play</span></div></div>")
+    $("#playButton").click((e) => {
+        if ($("#playButton .label").html() == "Play") {
+            $("#playButton .label").html("Stop")
+            Tone.start()
+            Tone.Transport.start()
+            broadcastToAllConn("startPlaying")
+        }
+        else if ($("#playButton .label").html() == "Stop") {
+            Tone.Transport.pause()
+            $("#playButton .label").html("Play")
+        }
+        removeMasterSlave()
+        mySketch.remove();
+
+    })
+    appendBPMControl()
+    
+    //animation for stepper with gsap
+    
+
+    function appendBPMControl(){
+        $("#master-controls").append("<div id='BPM-Stepper'><div id='BPM-controls'><div id='inc-BPM' class='BPM-control'>+</div><div id='dec-BPM' class='BPM-control'>-</div></div><div id='BPM-label'>120</div></div>")
+        $("#inc-BPM").click(() => { 
+           
+            gsap.fromTo(
+              "#inc-BPM",
+              { y: -10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.4, ease: "power3.inOut" }
+            );
+             gsap.fromTo(
+              "#BPM-label",
+              { y: -10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.2, ease: "power3.inOut" }
+            );
+            let val = $("#BPM-label").html();
+            val++;
+            Tone.Transport.bpm.rampTo(val, 0.5);
+            $("#BPM-label").html(val);
+          });
+          $("#dec-BPM").click(() => {
+            gsap.fromTo(
+              "#dec-BPM",
+              { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.4, ease: "power3.inOut" }
+            );
+            gsap.fromTo(
+              "#BPM-label",
+              { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.2, ease: "power3.inOut" }
+            );
+          
+            let val = $("#BPM-label").html();
+            val--;
+            Tone.Transport.bpm.rampTo(val, 0.5);
+            $("#BPM-label").html(val);
+          });
+    }
+      
+}
+
+
+
+
 function createSequencer(conn) {
 
     let seqLength = 16
 
     let noteNames = ["F#3", "E3", "C#3", "A3"]
     let noteCount = noteNames.length
+   
     $("#sequencers").append(`<div class='tone-step-sequencer' id='sequencer-${conn.peer}'></div>`)
     for (let j = 0; j < noteCount; j++) {
         $(".tone-step-sequencer").last().append("<div class='seqRow'></div>")
@@ -35,7 +102,7 @@ function createSequencer(conn) {
         }
     }
 
-
+    conn.send({color: colors[($(".tone-step-sequencer").length-1)%(colors.length-1)]}) // sending corresponding color
     //setup a polyphonic synth
     //  let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
 

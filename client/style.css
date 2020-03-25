@@ -8,7 +8,6 @@
     /*must be teilbar durch 2*/
     --bordRad: calc(var(--cbSize) /2);
     --bordSize: 1px;
-
     --boxMarg: 3px;
     font-family: 'Helvetica';
     font-size: 48px;
@@ -37,6 +36,22 @@ body {
     color: grey;
 }
 
+#my-color {
+    transition: all 2s ease-in-out;
+    width: var(--cbSize);
+    height: var(--cbSize);
+    display: flex;
+    margin-top: var(--cbMargin);
+    margin-bottom: var(--cbMargin);
+    margin-left: 3px;
+    margin-right: 3px;
+    justify-content: center;
+    align-items: center;
+    border: solid var(--bordSize) var(--grey);
+    border-radius: 100%;
+    position: relative;
+}
+
 #master-controls {
     width: 100%;
     display: flex;
@@ -48,7 +63,6 @@ body {
 }
 
 #playButton {
-
     float: left;
     display: flex;
     justify-content: center;
@@ -63,12 +77,49 @@ body {
     margin-right: var(--boxMarg);
 }
 
+#BPM-Stepper {
+    width: min-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--boxMarg);
+    margin-left: var(--boxMarg);
+    margin-right: var(--boxMarg);
+}
+
+#BPM-controls {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+#BPM-label {
+    display: flex;
+    height: 100%;
+}
+
+.BPM-control {
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+ 
+   /*  border-radius: 100%;
+    border: solid 1px black; */
+}
+#inc-BPM{
+    margin-bottom: 5px;
+}
 #sequencers {
+    margin-top: 5px;
     display: flex;
     align-items: center;
     flex-direction: column;
     width: min-content;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 input[type=checkbox] {
@@ -163,6 +214,18 @@ input[type=checkbox] {
 
 .tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer .cb-container input[type=checkbox]:checked+.cb-span {
     background-color: #00AD99;
+}
+
+.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer .cb-container input[type=checkbox]:checked+.cb-span {
+    background-color: #FBA500;
+}
+
+.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer .cb-container input[type=checkbox]:checked+.cb-span {
+    background-color: #2671BC;
+}
+
+.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer~.tone-step-sequencer .cb-container input[type=checkbox]:checked+.cb-span {
+    background-color: #F15A24;
 }
 
 .deltaSlider-container {
