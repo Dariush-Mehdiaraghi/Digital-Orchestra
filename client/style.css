@@ -44,10 +44,11 @@ body {
 }
 
 #playButton .label {
-    font-size: 0.5rem;
+    font-size: 0.4rem;
 }
 
 #playButton {
+
     float: left;
     display: flex;
     justify-content: center;
@@ -181,7 +182,7 @@ input[type=checkbox] {
 console {
     overflow: scroll;
     width: 100%;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     font-size: 0.2rem;
     max-height: 10%;

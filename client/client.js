@@ -69,14 +69,25 @@ function setupConn(recivedConn) {
         if (myRole == "master" && !$(`#sequencer-${conn.peer}`).length) {
             if(!$("#sequencers").length){
                 $("body").append("<div id='sequencers'></div>")
-                $("#sequencers").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>&#9654;</span></div></div>")
+                $("#sequencers").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>Play</span></div></div>")
                 $("#playButton").click((e) => {
                     console.log("start Playing")
-                  
+                   if( $("#playButton .label").html() == "Play"){
+                    $("#playButton .label").html("Stop")
                     Tone.start()
                     Tone.Transport.start()
-                    mySketch.remove();
+                  
                     broadcastToAllConn("startPlaying")
+                   } 
+                   else if($("#playButton .label").html() == "Stop"){
+                    
+                   
+                    Tone.Transport.stop()
+                    $("#playButton .label").html("Play")
+                   }
+                    removeMasterSlave()
+                    mySketch.remove();
+         
                 })
                 
            
@@ -120,7 +131,7 @@ function setupConn(recivedConn) {
                     Tone.Transport.start()
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
                     mySketch.remove();
-
+                    removeMasterSlave()
                     $("body").append("<div class='deltaSlider-container'></div>")
                     $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
                     $(".deltaSlider-container").append('<input type="range" name="deltaSlider" id="deltaSlider" value="0" min="-0.2" max="0.2" step="0.002" />')
@@ -173,7 +184,10 @@ function broadcastToAllConn(msg) {
         })
     }
 }
-
+function removeMasterSlave() {
+    $("#master").remove();
+    $("#slave").remove();
+}
 function appendMasterSlave() {
 
     $("body").append("<div id='master'>Master</div>");
