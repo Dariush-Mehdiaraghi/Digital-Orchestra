@@ -51,8 +51,7 @@ peer.on('open', function (id) {
 });
 peer.on('disconnected', function () {
     console.log("⚰️ Peer-Server disconnected trying to reconnect")
-    $("#master").remove()
-    $("#slave").remove()
+    removeMasterSlave()
     if (!connections.length) {
         $("body").append(`<div>Sorry no Peer-server available. Try to Reload the page please :)</div>`)
     }
@@ -69,7 +68,7 @@ function setupConn(recivedConn) {
     conn.on('open', function () {
 
         if (myRole == "master" && !$(`#sequencer-${conn.peer}`).length) {
-            if (!$("#sequencers").length) {
+            if (!$("#master-div").length) {
                 createMasterControls()
             }
 
@@ -111,14 +110,14 @@ function setupConn(recivedConn) {
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
                     mySketch.remove();
                     removeMasterSlave()
-                    $("body").append("<div class='deltaSlider-container'></div>")
+                 /*    $("body").append("<div class='deltaSlider-container'></div>")
                     $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
                     $(".deltaSlider-container").append('<input type="range" name="deltaSlider" id="deltaSlider" value="0" min="-0.2" max="0.2" step="0.002" />')
                     $("#deltaSlider").on("input", (e) => {
                         $(".deltaSlider-display").text(e.target.value * 1000 + " ms")
                         deltaSliderVal = e.target.value
                         //console.log("slider value changed " + e.target.value)
-                    })
+                    }) */
                 }
             }
 
@@ -155,11 +154,12 @@ function setupConn(recivedConn) {
             connections.splice(i, 1);
         }
 
-
         if (myRole == "slave") {
             myRole = undefined 
+            $("#slave-div").remove()
+            appendMasterSlave()
             $("#my-color").css("background-color", "white")
-
+           
         } 
         if (myRole == "master") {
             for (let i = 0; i < connections.length; i++) {
@@ -169,7 +169,12 @@ function setupConn(recivedConn) {
                 console.log("sending to " + connection.peer + " this color: " + color)
             }
         }
-        if (myRole == "master" && connections.length <= 0) { myRole = undefined }
+        if (myRole == "master" && connections.length <= 0) { 
+            myRole = undefined  
+            $("#master-div").remove()
+            appendMasterSlave()
+            
+        }
     })
     conn.on('error', function (err) {
         console.log("⛔ Connection error: " + err)
@@ -235,7 +240,7 @@ function setupSlave() {
     myRole = "slave"
     console.log("🙇🏾‍♂️ I'm a SLAVE now")
     mySketch = new p5(slaveSketch)
-    $("body").append("<div id='my-color'></div>")
+    $("body").append("<div id='slave-div'><div id='my-color'></div></div>")
 
 
 }
