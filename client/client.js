@@ -100,6 +100,13 @@ function setupConn(recivedConn) {
                 }
                 let timeIplay = data.time - delta + 0.8 + deltaSliderVal
                 polySynth.triggerAttackRelease(data.notes, "64n", timeIplay)//, data.time)
+                Tone.Draw.schedule(function(){
+                    gsap.fromTo(
+                        "body",
+                        {backgroundColor: myColor},
+                        {backgroundColor: "white", duration: 0.4, ease: "power3.inOut" }
+                    );
+                }, timeIplay)
                 // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
                 //player.start()
             }
@@ -109,7 +116,7 @@ function setupConn(recivedConn) {
                     Tone.Transport.start()
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
                     mySketch.remove();
-                    removeMasterSlave()
+                  
                  /*    $("body").append("<div class='deltaSlider-container'></div>")
                     $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
                     $(".deltaSlider-container").append('<input type="range" name="deltaSlider" id="deltaSlider" value="0" min="-0.2" max="0.2" step="0.002" />')
@@ -155,11 +162,8 @@ function setupConn(recivedConn) {
         }
 
         if (myRole == "slave") {
-            myRole = undefined 
-            $("#slave-div").remove()
-            appendMasterSlave()
             $("#my-color").css("background-color", "white")
-           
+            mySketch = new p5(slaveSketch);
         } 
         if (myRole == "master") {
             for (let i = 0; i < connections.length; i++) {
@@ -194,8 +198,8 @@ function removeMasterSlave() {
 }
 function appendMasterSlave() {
 
-    $("body").append("<div id='master'>Master</div>");
-    $("body").append("<div id='slave'>Slave</div>");
+    $("body").append("<div id='master'>Master 🔊</div>");
+    $("body").append("<div id='slave'>Slave 👂</div>");
 
     $("#master").click(function () {
 
@@ -206,6 +210,7 @@ function appendMasterSlave() {
         else if (myRole != "master") {
             setupMaster()
         }
+        removeMasterSlave()
     });
 
     $("#slave").click(function () {
@@ -231,6 +236,7 @@ function appendMasterSlave() {
         else if (myRole != "slave") {
             setupSlave()
         }
+        removeMasterSlave()
     });
 }
 function setupSlave() {
