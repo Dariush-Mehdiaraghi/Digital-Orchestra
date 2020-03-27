@@ -64,8 +64,8 @@ io.on('connection', function (socket) {
     socket.on('imNotMaster', function () {
         rooms.forEach((peerID, freq) => {
             if (peerID == clients.get(socket)) {
-                rooms.delete(freq);
-                console.log("😵😵 deleted Room from Master: " + peerID);
+                rooms.delete(freq)
+                console.log("😵😵 deleted Room from Master: " + peerID)
             }
         })
 
@@ -85,8 +85,8 @@ io.on('connection', function (socket) {
         console.log("💔 user disconnected " + clients.get(socket))
         rooms.forEach((peerID, freq) => {
             if (peerID == clients.get(socket)) {
-                rooms.delete(freq);
-                console.log("😵😵 deleted Room from Master: " + peerID);
+                rooms.delete(freq)
+                console.log("😵😵 deleted Room from Master: " + peerID)
             }
         }
 

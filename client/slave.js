@@ -27,7 +27,7 @@ let slaveSketch = function (p) {
          p.fft = new p5.FFT(); //good is : 0.8, 16384
          p.fft.smooth(0.9)
          p.fft.setInput(p.mic); */
-
+        frequencyFound = 0;
         //p.noLoop()
     }
 

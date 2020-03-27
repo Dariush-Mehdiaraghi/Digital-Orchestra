@@ -112,10 +112,11 @@ function setupConn(recivedConn) {
             }
 
             else if (data == "startPlaying") {
+                mySketch.remove();
                 if (polySynth == undefined) {
                     Tone.Transport.start()
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
-                    mySketch.remove();
+                    
                   
                  /*    $("body").append("<div class='deltaSlider-container'></div>")
                     $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
@@ -125,6 +126,9 @@ function setupConn(recivedConn) {
                         deltaSliderVal = e.target.value
                         //console.log("slider value changed " + e.target.value)
                     }) */
+                }
+                else{
+                    Tone.Transport.start()
                 }
             }
 
@@ -163,12 +167,15 @@ function setupConn(recivedConn) {
 
         if (myRole == "slave") {
             $("#my-color").css("background-color", "white")
-            mySketch = new p5(slaveSketch);
+            hasMaster = false
+            mySketch = new p5(slaveSketch)
+            delta = undefined
+            Tone.Transport.stop()
         } 
         if (myRole == "master") {
             for (let i = 0; i < connections.length; i++) {
                 const connection = connections[i]
-                const color = { color: colors[i % (colors.length - 1)] };
+                const color = { color: colors[i % (colors.length - 1)] }
                 connection.send(color)
                 console.log("sending to " + connection.peer + " this color: " + color)
             }
