@@ -98,8 +98,8 @@ function setupConn(recivedConn) {
                 if (delta == undefined) {
                     delta = data.time - Tone.now() //Diffrence between our time and the incoming notes time. Set once to have a constant offset in time
                 }
-                let timeIplay = data.time - delta + 0.8 + deltaSliderVal
-                sampler.triggerAttack(data.notes)//, timeIplay)//, data.time)
+                let timeIplay = data.time - delta + 0.8
+                sampler.triggerAttack(data.notes, timeIplay)//, data.time)
                 Tone.Draw.schedule(function(){
                     gsap.fromTo(
                         "body",
