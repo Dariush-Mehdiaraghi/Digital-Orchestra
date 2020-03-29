@@ -114,6 +114,7 @@ function setupConn(recivedConn) {
             else if (data == "startPlaying") {
                 mySketch.remove();
                 if (polySynth == undefined) {
+                    Tone.context.latencyHint = 'playback' //higher latency but more stable
                     Tone.Transport.start()
                     polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
                     

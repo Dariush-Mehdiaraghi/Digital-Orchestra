@@ -86,7 +86,7 @@ let slaveSketch = function (p) {
             p.fill(50)
             p.text("Amp: " + spectrum[indexOfMaxValue], p.width / 2,indexOfMaxValue/p.specScale)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
-            p.text("Freq: " + peakFreq, p.width / 2.4, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
+            p.text("Freq: " + peakFreq, p.width / 2 +100, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
             p.noFill()
             p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
 
