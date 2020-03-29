@@ -20,9 +20,14 @@ body {
     flex-direction: column;
 }
 
-.msg {
-    color: #f9a800;
+#main-menu{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
+
 
 .p5Canvas {
     z-index: -2;

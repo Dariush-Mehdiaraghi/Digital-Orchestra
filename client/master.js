@@ -96,7 +96,11 @@ function createSequencer(conn) {
             //every cb in a column has the same selector
         }
     }
-
+    gsap.fromTo(
+        `#sequencer-${conn.peer}`,
+        { y: 100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power3.inOut" }
+    );
     conn.send({ color: colors[($(".tone-step-sequencer").length - 1) % (colors.length - 1)] }) // sending corresponding color
     //setup a polyphonic synth
     //  let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();

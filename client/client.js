@@ -200,13 +200,18 @@ function broadcastToAllConn(msg) {
     }
 }
 function removeMasterSlave() {
-    $("#master").remove();
-    $("#slave").remove();
+    $("#main-menu").remove();
 }
 function appendMasterSlave() {
 
-    $("body").append("<div id='master'>Master 🔊</div>");
-    $("body").append("<div id='slave'>Slave 👂</div>");
+    $("body").append("<div id='main-menu'><div id='master'>sender</div><div id='animation-container'></div><div id='slave'>reciver</div></div>");
+    var animation = bodymovin.loadAnimation({
+        container: document.getElementById('animation-container'),
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'sendAnim.json'
+      })
 
     $("#master").click(function () {
 
