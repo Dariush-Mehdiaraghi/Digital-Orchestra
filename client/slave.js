@@ -1,6 +1,15 @@
 let streamObj
-let audioContext = window.AudioContext || window.webkitAudioContext;
+let audioContext = new AudioContext(); //|| window.webkitAudioContext;
 let spectrum = new Uint8Array(8192);
+
+let gain_node
+let microphone_stream
+let script_processor_node
+let script_processor_fft_node
+let analyserNode
+
+let audioNodes = [gain_node, microphone_stream, script_processor_node, analyserNode]
+
 
 let frequencyFound
 
@@ -131,13 +140,7 @@ function startMicrophoneInput() {
 
         var BUFF_SIZE = 16384;
 
-        var audioInput = null,
-            microphone_stream = null,
-            gain_node = null,
-            script_processor_node = null,
-            script_processor_fft_node = null,
-            analyserNode = null;
-
+        
 
         navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         if (navigator.mediaDevices.getUserMedia) {
@@ -206,6 +209,7 @@ function startMicrophoneInput() {
                      show_some_data(spectrum, 5, "from fft");
                  }*/
             };
+            audioNodes = [gain_node, microphone_stream, script_processor_node, analyserNode]
         }
 
     }();//  webaudio_tooling_obj = function()

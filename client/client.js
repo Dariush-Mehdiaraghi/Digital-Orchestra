@@ -112,7 +112,9 @@ function setupConn(recivedConn) {
             }
 
             else if (data == "startPlaying") {
-                mySketch.remove();
+                mySketch.remove()
+                audioNodes.forEach((node)=>{if(node!= undefined){console.log("closed: "+ node); node.disconnect()}})
+                audioContext.close()
                 if (sampler == undefined) {
                     Tone.context.latencyHint = 'interactive' //higher latency but more stable
                    
