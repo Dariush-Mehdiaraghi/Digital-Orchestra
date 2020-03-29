@@ -10,7 +10,7 @@ let mySketch;
 let myColor;
 let hasMaster = false
 const colors = ["#FBA500", "#2671BC", "#F15A24", "#096836", "#A344A7", "#00AD99"]
-let polySynth
+let sampler
 let ts
 let delta
 let deltaSliderVal = 0
@@ -99,7 +99,7 @@ function setupConn(recivedConn) {
                     delta = data.time - Tone.now() //Diffrence between our time and the incoming notes time. Set once to have a constant offset in time
                 }
                 let timeIplay = data.time - delta + 0.8 + deltaSliderVal
-                polySynth.triggerAttackRelease(data.notes, "64n", timeIplay)//, data.time)
+                sampler.triggerAttack(data.notes, timeIplay)//, data.time)
                 Tone.Draw.schedule(function(){
                     gsap.fromTo(
                         "body",
@@ -113,11 +113,19 @@ function setupConn(recivedConn) {
 
             else if (data == "startPlaying") {
                 mySketch.remove();
-                if (polySynth == undefined) {
-                    Tone.context.latencyHint = 'playback' //higher latency but more stable
-                    Tone.Transport.start()
-                    polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
-                    
+                if (sampler == undefined) {
+                    Tone.context.latencyHint = 'interactive' //higher latency but more stable
+                   
+                    sampler = new Tone.Sampler({
+                        "F#3" : `audio/s${(colors.indexOf(myColor)%3)}/1.mp3`,
+                        "E3" : `audio/s${colors.indexOf(myColor)%3}/2.mp3`,
+                        "C#3" : `audio/s${colors.indexOf(myColor)%3}/3.mp3`,
+                        "A3" : `audio/s${colors.indexOf(myColor)%3}/4.mp3`,
+                    }, function(){
+                        //sampler will repitch the closest sample
+                        Tone.Transport.start()
+                        sampler.triggerAttack("D3")
+                    }).toMaster()
                   
                  /*    $("body").append("<div class='deltaSlider-container'></div>")
                     $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
