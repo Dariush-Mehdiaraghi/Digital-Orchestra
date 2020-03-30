@@ -179,6 +179,7 @@ function setupConn(recivedConn) {
         if (myRole == "slave") {
             $("#my-color").css("background-color", "white")
             hasMaster = false
+            startMicrophoneInput();
             mySketch = new p5(slaveSketch)
             delta = undefined
             Tone.Transport.stop()
