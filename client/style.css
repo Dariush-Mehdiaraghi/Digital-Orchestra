@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Anonymous+Pro&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Cutive+Mono&display=swap');
 :root {
-    --grey: #707070;
+    --bodyBg: white;
+    --secondaryColor: #707070;
     --cbSize: 14px;
     --cbLabelSize: 10px;
     --cbMargin: 5px;
@@ -12,9 +13,16 @@
     font-family: 'Helvetica';
     font-size: 48px;
 }
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bodyBg: black;
+        --secondaryColor: #707070;
+    }
+}
 
 body {
-    color: var(--grey);
+    background-color: var(--bodyBg);
+    color: var(--secondaryColor);
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -54,7 +62,7 @@ body {
     margin-right: 3px;
     justify-content: center;
     align-items: center;
-    border: solid var(--bordSize) var(--grey);
+    border: solid var(--bordSize) var(--secondaryColor);
     border-radius: 100%;
     position: relative;
 }
@@ -76,7 +84,7 @@ body {
     align-items: center;
     width: 42px;
     height: 42px;
-    border: solid var(--bordSize) var(--grey);
+    border: solid var(--bordSize) var(--secondaryColor);
     border-radius: var(--bordRad);
     padding: calc(var(--cbSize)*2/3/2);
     margin-bottom: var(--boxMarg);
@@ -138,7 +146,7 @@ input[type=checkbox] {
     width: -webkit-min-content;
     width: -moz-min-content;
     width: min-content;
-    border: solid var(--bordSize) var(--grey);
+    border: solid var(--bordSize) var(--secondaryColor);
     border-radius: var(--bordRad);
     padding: 5px;
     margin-bottom: var(--boxMarg);
@@ -161,7 +169,7 @@ input[type=checkbox] {
     margin-right: 3px;
     justify-content: center;
     align-items: center;
-    border: solid var(--bordSize) var(--grey);
+    border: solid var(--bordSize) var(--secondaryColor);
     border-radius: 100%;
     position: relative;
 }
@@ -193,11 +201,11 @@ input[type=checkbox] {
 }
 
 .cb-container input[type=checkbox]:checked+.cb-span {
-    border: solid var(--bordSize) var(--grey);
+    border: solid var(--bordSize) var(--secondaryColor);
     transition: all .6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/*studpid solution for diffrent colors in chekcboxes bc could't find one via js(color can only be set on cheked ones)*/
+/*very very studpid solution for diffrent colors in chekcboxes bc could't find one via js(color can only be set on cheked ones)*/
 
 .tone-step-sequencer .cb-container input[type=checkbox]:checked+.cb-span {
     background-color: #FBA500;

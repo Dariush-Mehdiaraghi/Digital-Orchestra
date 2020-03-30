@@ -13,7 +13,8 @@ const colors = ["#FBA500", "#2671BC", "#F15A24", "#096836", "#A344A7", "#00AD99"
 let sampler
 let ts
 let delta
-let deltaSliderVal = 0
+let myBackgroundColor = $("body").css("background-color")
+let mySecondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondaryColor');
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
         let conn = peer.connect(msg, { serialization: "json" });
@@ -96,7 +97,7 @@ function setupConn(recivedConn) {
 
             if (data.time != undefined) {
                 if (delta == undefined) {
-                    delta = data.time - Tone.now() //Diffrence between our time and the incoming notes time. Set once to have a constant offset in time
+                    delta = data.time - Tone.now() //Diffrence between our time and the incoming notes time. Set once to have a constant offset in time 
                 }
                 let timeIplay = data.time - delta + 0.8
                 sampler.triggerAttack(data.notes, timeIplay)//, data.time)
@@ -104,7 +105,7 @@ function setupConn(recivedConn) {
                     gsap.fromTo(
                         "body",
                         {backgroundColor: myColor},
-                        {backgroundColor: "white", duration: 0.4, ease: "power3.inOut" }
+                        {backgroundColor: myBackgroundColor, duration: 0.9, ease: "power3.inOut" } //color interpolation to a css variable doesnt work
                     );
                 }, timeIplay)
                 // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
@@ -113,11 +114,10 @@ function setupConn(recivedConn) {
 
             else if (data == "startPlaying") {
                 mySketch.remove()
-                audioNodes.forEach((node)=>{if(node!= undefined){console.log("closed: "+ node); node.disconnect()}})
+                audioNodes.forEach((node)=>{if(node!= undefined){node.disconnect()}})
                 audioContext.close()
                 if (sampler == undefined) {
-                    Tone.context.latencyHint = 'interactive' //higher latency but more stable
-                   
+                    Tone.context.latencyHint = "balanced"  //"interactive" (default, prioritizes low latency), "playback" (prioritizes sustained playback), "balanced" (balances latency and performance), "fastest" (lowest latency, might glitch more often).
                     sampler = new Tone.Sampler({
                         "F#3" : `audio/s${(colors.indexOf(myColor)%3)}/1.mp3`,
                         "E3" : `audio/s${colors.indexOf(myColor)%3}/2.mp3`,
@@ -217,7 +217,7 @@ function removeMasterSlave() {
 function appendMasterSlave() {
 
     $("body").append("<div id='main-menu'><div id='master'>sender</div><div id='animation-container'></div><div id='slave'>reciver</div></div>");
-    var animation = bodymovin.loadAnimation({
+    let animation = bodymovin.loadAnimation({
         container: document.getElementById('animation-container'),
         renderer: 'svg',
         loop: true,
@@ -285,7 +285,7 @@ function setupMaster() {
 
 // Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
 // Reference to an output container, use 'pre' styling for JSON output
-var output = document.createElement('console');
+/* var output = document.createElement('console');
 document.body.appendChild(output);
 
 // Reference to native method(s)
@@ -302,7 +302,7 @@ console.log = function (...items) {
     });
     output.innerHTML += items.join(' ') + '<br />';
     output.scrollTop = output.scrollHeight;
-};
+}; */
 //end of mobile console
 
 

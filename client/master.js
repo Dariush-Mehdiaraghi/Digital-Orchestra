@@ -133,10 +133,10 @@ function createSequencer(conn) {
 
         let step = posIndex % seqLength
 
-        let color = $(".cb-container").css("border-color")
+       
         let lastStep = (posIndex - 1) % seqLength
-        $(`.cont-col-${lastStep}`).css({"background-color":"white"})
-        $(`.cont-col-${step}`).css({"background-color": color})
+        $(`.cont-col-${lastStep}`).css({"background-color":"var(--bodyBg)"})
+        $(`.cont-col-${step}`).css({"background-color": "var(--secondaryColor)"})
         posIndex++
     }
 

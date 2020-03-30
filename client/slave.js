@@ -43,8 +43,9 @@ let slaveSketch = function (p) {
     p.draw = function () {
 
         //  /*     
-        p.stroke(0)
-        p.background(255);
+        p.stroke(mySecondaryColor)
+   
+        p.background(myBackgroundColor);
         // let spectrum = p.fft.analyze();
         //console.log(spectrum)
         //at what index of energies is the max? //*/
@@ -92,7 +93,7 @@ let slaveSketch = function (p) {
         p.endShape();
 
         if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
-            p.fill(50)
+            p.fill(mySecondaryColor)
             p.text("Amp: " + spectrum[indexOfMaxValue], p.width / 2,indexOfMaxValue/p.specScale)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
             p.text("Freq: " + peakFreq, p.width / 2 +100, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
