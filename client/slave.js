@@ -78,7 +78,7 @@ let slaveSketch = function (p) {
 
 
         }
-        // /* 
+  
        
         p.beginShape();
         let x = 0;
@@ -100,7 +100,7 @@ let slaveSketch = function (p) {
             p.noFill()
             p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
 
-        } //*/
+        } 
     }
 
   p.windowResized =   function () {
@@ -217,5 +217,3 @@ function startMicrophoneInput() {
 
 
 }
-
-//let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();

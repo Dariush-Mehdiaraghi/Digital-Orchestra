@@ -15,6 +15,7 @@ let ts
 let delta
 let myBackgroundColor = $("body").css("background-color")
 let mySecondaryColor = getComputedStyle(document.documentElement).getPropertyValue('--secondaryColor');
+
 socket.on('peerIDmsg-Other', function (msg) {
     if (!alreadyHaveConnection(msg)) {
         let conn = peer.connect(msg, { serialization: "json" });

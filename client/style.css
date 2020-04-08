@@ -205,7 +205,7 @@ input[type=checkbox] {
     transition: all .6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/*very very studpid solution for diffrent colors in chekcboxes bc could't find one via js(color can only be set on cheked ones)*/
+/*very very studpid solution for diffrent colors in chekcboxes bc could't find one via js(color can only be set on cheked ones/ inline)*/
 
 .tone-step-sequencer .cb-container input[type=checkbox]:checked+.cb-span {
     background-color: #FBA500;
