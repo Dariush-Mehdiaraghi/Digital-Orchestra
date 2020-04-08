@@ -110,7 +110,6 @@ function setupConn(recivedConn) {
                     );
                 }, timeIplay)
                 // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
-                //player.start()
             }
 
             else if (data == "startPlaying") {
@@ -130,14 +129,6 @@ function setupConn(recivedConn) {
                         sampler.triggerAttack("D3")
                     }).toMaster()
                   
-                 /*    $("body").append("<div class='deltaSlider-container'></div>")
-                    $(".deltaSlider-container").append("<div class='deltaSlider-display'>0</div>")
-                    $(".deltaSlider-container").append('<input type="range" name="deltaSlider" id="deltaSlider" value="0" min="-0.2" max="0.2" step="0.002" />')
-                    $("#deltaSlider").on("input", (e) => {
-                        $(".deltaSlider-display").text(e.target.value * 1000 + " ms")
-                        deltaSliderVal = e.target.value
-                        //console.log("slider value changed " + e.target.value)
-                    }) */
                 }
                 else{
                     Tone.Transport.start()
@@ -147,7 +138,7 @@ function setupConn(recivedConn) {
             else if (data == "pong") {
                 let timeTook = performance.now() - timeOnSend
                 console.log("🏓 Ping pong took " + timeTook + "ms")
-                // $("body").append(`<div class="ping">Ping took this long : ${timeTook}</div>`)
+                $("body").append(`<div class="ping">Ping took this long : ${timeTook}</div>`)
             }
 
             else if (data == "ping") {
@@ -158,13 +149,7 @@ function setupConn(recivedConn) {
                 myColor = data.color
                 $("#my-color").css("background-color", myColor)
             }
-
-
-            else {
-                //ts.receive(conn.peer, data);
-            }
         });
-        // $("body").append(`<div class="msg" id="${conn.peer}">I'm connected to: ${conn.peer}</div>`)
         console.log("💞 I now have an open connection to: " + conn.peer);
     })
     conn.on('close', function () {
@@ -239,19 +224,6 @@ function appendMasterSlave() {
     });
 
     $("#slave").click(function () {
-        /* 
-         if (typeof DeviceMotionEvent.requestPermission === 'function') {
-             DeviceMotionEvent.requestPermission()
-               .then(permissionState => {
-                 if (permissionState === 'granted') {
-                   window.addEventListener('devicemotion', () => {});
-                 }
-               })
-               .catch(console.error);
-           } else {
-             // handle regular non iOS 13+ devices
-           } */
-
         if (myRole == "master") {
             $("#start").remove()
             mySketch.remove()
@@ -286,11 +258,11 @@ function setupMaster() {
 
 // Stack overflow anwser for mobile logging from Marcus Hughes - Jan 22 2018
 // Reference to an output container, use 'pre' styling for JSON output
-/* var output = document.createElement('console');
+let output = document.createElement('console');
 document.body.appendChild(output);
 
 // Reference to native method(s)
-var oldLog = console.log;
+let oldLog = console.log;
 
 console.log = function (...items) {
 
@@ -303,7 +275,7 @@ console.log = function (...items) {
     });
     output.innerHTML += items.join(' ') + '<br />';
     output.scrollTop = output.scrollHeight;
-}; */
+}; 
 //end of mobile console
 
 

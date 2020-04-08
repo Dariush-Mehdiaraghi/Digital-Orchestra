@@ -10,7 +10,6 @@ let analyserNode
 
 let audioNodes = [gain_node, microphone_stream, script_processor_node, analyserNode]
 
-
 let frequencyFound
 
 let slaveSketch = function (p) {
@@ -26,37 +25,23 @@ let slaveSketch = function (p) {
         p.createCanvas(p.windowWidth, p.windowHeight);
         p.noFill();
         p.pixelDensity(2);
-         p.osc = new p5.Oscillator('sine');
-         p.osc.freq(frequencyFound);
-        /* p.mic = new p5.AudioIn();
-         p.mic.amplitude.audioContext = audioContext
-        
-         p.mic.start();
-         p.mic.stream = streamObj
-         p.fft = new p5.FFT(); //good is : 0.8, 16384
-         p.fft.smooth(0.9)
-         p.fft.setInput(p.mic); */
+        p.osc = new p5.Oscillator('sine');
+        p.osc.freq(frequencyFound);
         frequencyFound = 0;
-        //p.noLoop()
     }
 
     p.draw = function () {
 
-        //  /*     
         p.stroke(mySecondaryColor)
-   
+
         p.background(myBackgroundColor);
-        // let spectrum = p.fft.analyze();
-        //console.log(spectrum)
-        //at what index of energies is the max? //*/
+
         let indexOfMaxValue = indexOfMax(spectrum);
         let peakFreq = round_to_precision(indexOfMaxValue * (p.sampleRate() / 2) / spectrum.length, 100)
         if (peakFreq != undefined && peakFreq > 0) {
             p.peakBuffer[p.peakCount % p.peakDuration] = peakFreq
             p.peakCount++
         }
-        
-        //console.log(p.frameCount%50)
         let bufferSum = 0;
 
         for (let i = 0; i < p.peakDuration; i++) {
@@ -72,38 +57,36 @@ let slaveSketch = function (p) {
                 frequencyFound = peakFreq
                 socket.emit('foundFreq', frequencyFound)
                 console.log("〰️ found frequency: " + frequencyFound + "Hz")
-
-                //window.navigator.vibrate([200, 100, 200]);
             }
 
 
         }
-  
-       
+
+
         p.beginShape();
         let x = 0;
         for (i = 0; i < spectrum.length; i++) {
-            if (x<spectrum.length-p.specScale) {
-                x += p.specScale ;
+            if (x < spectrum.length - p.specScale) {
+                x += p.specScale;
             }
-            p.vertex(p.map(spectrum[x], 0, 255, p.width, 0),i);
-          
+            p.vertex(p.map(spectrum[x], 0, 255, p.width, 0), i);
+
 
         }
         p.endShape();
 
         if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
             p.fill(mySecondaryColor)
-            p.text("Amp: " + spectrum[indexOfMaxValue], p.width / 2,indexOfMaxValue/p.specScale)
+            p.text("Amp: " + spectrum[indexOfMaxValue], p.width / 2, indexOfMaxValue / p.specScale)
             if (frequencyFound == peakFreq) { p.fill(10, 255, 10); p.stroke(10, 255, 10) }
-            p.text("Freq: " + peakFreq, p.width / 2 +100, indexOfMaxValue/p.specScale ) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
+            p.text("Freq: " + peakFreq, p.width / 2 + 100, indexOfMaxValue / p.specScale) //Frequency = indexOfMaxValue *(sampleRate()/2)/spectrum.length
             p.noFill()
-            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue/p.specScale, spectrum[indexOfMaxValue] * 0.3);
+            p.ellipse(p.map(spectrum[indexOfMaxValue], 0, 255, p.width, 0), indexOfMaxValue / p.specScale, spectrum[indexOfMaxValue] * 0.3);
 
-        } 
+        }
     }
 
-  p.windowResized =   function () {
+    p.windowResized = function () {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
     }
     function indexOfMax(arr) {
@@ -140,8 +123,6 @@ function startMicrophoneInput() {
         console.log("🎙️ Mic is starting up ...");
 
         var BUFF_SIZE = 16384;
-
-        
 
         navigator.getMic = (navigator.getUserMedia || navigator.webKitGetUserMedia || navigator.moxGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia);
         if (navigator.mediaDevices.getUserMedia) {
