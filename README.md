@@ -1,12 +1,10 @@
 # A WebRTC cross-device project
-Sending musical notes via WebRTC to devices in the same room.<br/>
-Check it out: https://digital-orchestra.herokuapp.com/
+Sending notes via WebRTC to devices in the same room.<br/>
 
 ### Paring
 To pair the devices the sender makes a beebing sound while the receiving devices detect the pitch. 
-The beeping sound plays at a specific frequency which corresponds to a "room" on the serve-rside. Every "room" is separated by 100hz starting from 2000hz to infinity. The frequency-range starts at 2000hz because it's where probably most of the speakers in mobile devices are most efficient.<br/>
-🤯 A very cool discovery is that it also works in the not perceivable range of 17'000hz upwards (for most adults) on certain devices (my Macbook Pro mid 2015 at least). The problem is that the microphone of certain mobile devices (I tested iPhone 6s, 8, 8plus) don't reach 17'000hz. <br/>
-The speakers of the testet mobile devices however reach beyond 20'000hz. I don't know the exact reason for this limitation maybe they have bad A/Ds or a intentionally set lowpass-filter to the input-signal.<br/>
+The beeping sound plays at a specific frequency which corresponds to a "room" on the server side. Each "room" is separated by 100hz starting from 2000hz to infinity. The frequency-range starts at 2000hz because it's where most speakers in mobile devices are the most efficient.<br/>
+
 
 ### Sending notes
 I used [Peer Js](https://github.com/peers/peerjs) for sending the data via WebRTC with the goal of low latency.
