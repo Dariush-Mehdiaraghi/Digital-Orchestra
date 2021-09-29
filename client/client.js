@@ -8,7 +8,7 @@ let timeOnSend;
 let myRole;
 let mySketch;
 let myColor;
-let hasMaster = false
+let hasSender = false
 const colors = ["#FBA500", "#2671BC", "#F15A24", "#096836", "#A344A7", "#00AD99"]
 let sampler
 let ts
@@ -28,7 +28,7 @@ socket.on('frequencyToPlay', function (freq) {
 })
 socket.on('foundFreq', function (room) {
     if (room != false) {
-        hasMaster = true
+        hasSender = true
         console.log("👨‍👩‍👧‍👦 I have joined the room of " + room)
         if (!alreadyHaveConnection(room)) {
 
@@ -48,12 +48,12 @@ peer.on('connection', function (recivedConn) {
 peer.on('open', function (id) {
     console.log('🆔 My peer ID is: ' + id);
     socket.emit('peerIDmsg', id)
-    appendMasterSlave()
+    appendSenderReceiver()
     // $("body").append(`<div>my peer id is: ${id}</div>`)
 });
 peer.on('disconnected', function () {
     console.log("⚰️ Peer-Server disconnected trying to reconnect")
-    removeMasterSlave()
+    removeSenderReceiver()
     if (!connections.length) {
         $("body").append(`<div>Sorry no Peer-server available. Try to Reload the page please :)</div>`)
     }
@@ -69,32 +69,15 @@ function setupConn(recivedConn) {
     let conn = recivedConn;
     conn.on('open', function () {
 
-        if (myRole == "master" && !$(`#sequencer-${conn.peer}`).length) {
-            if (!$("#master-div").length) {
-                createMasterControls()
+        if (myRole == "sender" && !$(`#sequencer-${conn.peer}`).length) {
+            if (!$("#sender-div").length) {
+                createSenderControls()
             }
 
             createSequencer(conn)
         }
 
-        /*    $("body").append("<div class='ping'>ping</div>");
-           $("div.ping").click(function () {
-               console.log("pressed ping")
-               if (connections.length != 0) {
-                   connections.forEach(conn => {
-                       // Send messages
-                       console.log("🏓 i send a ping")
-                       timeOnSend = performance.now();
-                       conn.send('ping');
-                   });
-               }
-               else {
-                   $(".ping").text("Sorry I got no connection to an other Peer :( Try again by klicking on me!");
-               }
-           }); */
-        //conn.send("Hi my Peer ID is: " + peer.id);
         conn.on('data', function (data) {
-           // console.log('📬 Received: ', data);
 
             if (data.time != undefined) {
                 if (delta == undefined) {
@@ -102,11 +85,11 @@ function setupConn(recivedConn) {
                 }
                 let timeIplay = data.time - delta + 0.8
                 sampler.triggerAttack(data.notes, timeIplay)//, data.time)
-                Tone.Draw.schedule(function(){
+                Tone.Draw.schedule(function () {
                     gsap.fromTo(
                         "body",
-                        {backgroundColor: myColor},
-                        {backgroundColor: myBackgroundColor, duration: 0.9, ease: "power3.inOut" } //color interpolation to a css variable doesnt work
+                        { backgroundColor: myColor },
+                        { backgroundColor: myBackgroundColor, duration: 0.9, ease: "power3.inOut" } //color interpolation to a css variable doesnt work
                     );
                 }, timeIplay)
                 // console.log("🎵 recived note with time: " + data.time + " time I will play: " + timeIplay)
@@ -114,23 +97,23 @@ function setupConn(recivedConn) {
 
             else if (data == "startPlaying") {
                 mySketch.remove()
-                audioNodes.forEach((node)=>{if(node!= undefined){node.disconnect()}})
+                audioNodes.forEach((node) => { if (node != undefined) { node.disconnect() } })
                 audioContext.close()
                 if (sampler == undefined) {
                     Tone.context.latencyHint = "balanced"  //"interactive" (default, prioritizes low latency), "playback" (prioritizes sustained playback), "balanced" (balances latency and performance), "fastest" (lowest latency, might glitch more often).
                     sampler = new Tone.Sampler({
-                        "F#3" : `audio/s${(colors.indexOf(myColor)%3)}/1.mp3`,
-                        "E3" : `audio/s${colors.indexOf(myColor)%3}/2.mp3`,
-                        "C#3" : `audio/s${colors.indexOf(myColor)%3}/3.mp3`,
-                        "A3" : `audio/s${colors.indexOf(myColor)%3}/4.mp3`,
-                    }, function(){
+                        "F#3": `audio/s${(colors.indexOf(myColor) % 3)}/1.mp3`,
+                        "E3": `audio/s${colors.indexOf(myColor) % 3}/2.mp3`,
+                        "C#3": `audio/s${colors.indexOf(myColor) % 3}/3.mp3`,
+                        "A3": `audio/s${colors.indexOf(myColor) % 3}/4.mp3`,
+                    }, function () {
                         //sampler will repitch the closest sample
                         Tone.Transport.start()
                         sampler.triggerAttack("D3")
                     }).toMaster()
-                  
+
                 }
-                else{
+                else {
                     Tone.Transport.start()
                 }
             }
@@ -162,15 +145,15 @@ function setupConn(recivedConn) {
             connections.splice(i, 1);
         }
 
-        if (myRole == "slave") {
+        if (myRole == "receiver") {
             $("#my-color").css("background-color", "white")
-            hasMaster = false
+            hasSender = false
             startMicrophoneInput();
-            mySketch = new p5(slaveSketch)
+            mySketch = new p5(receiverSketch)
             delta = undefined
             Tone.Transport.stop()
-        } 
-        if (myRole == "master") {
+        }
+        if (myRole == "sender") {
             for (let i = 0; i < connections.length; i++) {
                 const connection = connections[i]
                 const color = { color: colors[i % (colors.length - 1)] }
@@ -178,11 +161,11 @@ function setupConn(recivedConn) {
                 console.log("sending to " + connection.peer + " this color: " + color)
             }
         }
-        if (myRole == "master" && connections.length <= 0) { 
-            myRole = undefined  
-            $("#master-div").remove()
-            appendMasterSlave()
-            
+        if (myRole == "sender" && connections.length <= 0) {
+            myRole = undefined
+            $("#sender-div").remove()
+            appendSenderReceiver()
+
         }
     })
     conn.on('error', function (err) {
@@ -197,61 +180,61 @@ function broadcastToAllConn(msg) {
         })
     }
 }
-function removeMasterSlave() {
+function removeSenderReceiver() {
     $("#main-menu").remove();
 }
-function appendMasterSlave() {
+function appendSenderReceiver() {
 
-    $("body").append("<div id='main-menu'><div id='master'>sender</div><div id='animation-container'></div><div id='slave'>reciver</div></div>");
+    $("body").append("<div id='main-menu'><div id='sender'>sender</div><div id='animation-container'></div><div id='receiver'>receiver</div></div>");
     let animation = bodymovin.loadAnimation({
         container: document.getElementById('animation-container'),
         renderer: 'svg',
         loop: true,
         autoplay: true,
         path: 'sendAnim.json'
-      })
+    })
 
-    $("#master").click(function () {
+    $("#sender").click(function () {
 
-        if (myRole == "slave") {
+        if (myRole == "receiver") {
             mySketch.remove()
-            setupMaster()
+            setupSender()
         }
-        else if (myRole != "master") {
-            setupMaster()
+        else if (myRole != "sender") {
+            setupSender()
         }
-        removeMasterSlave()
+        removeSenderReceiver()
     });
 
-    $("#slave").click(function () {
-        if (myRole == "master") {
+    $("#receiver").click(function () {
+        if (myRole == "sender") {
             $("#start").remove()
             mySketch.remove()
-            socket.emit('imNotMaster', peer.id)
-            setupSlave()
+            socket.emit('imNotSender', peer.id)
+            setupReceiver()
         }
-        else if (myRole != "slave") {
-            setupSlave()
+        else if (myRole != "receiver") {
+            setupReceiver()
         }
-        removeMasterSlave()
+        removeSenderReceiver()
     });
 }
-function setupSlave() {
+function setupReceiver() {
 
     startMicrophoneInput()
     Tone.start("+0.1");
-    myRole = "slave"
-    console.log("🙇🏾‍♂️ I'm a SLAVE now")
-    mySketch = new p5(slaveSketch)
-    $("body").append("<div id='slave-div'><div id='my-color'></div></div>")
+    myRole = "receiver"
+    console.log("🙇🏾‍♂️ I'm a receiver now")
+    mySketch = new p5(receiverSketch)
+    $("body").append("<div id='receiver-div'><div id='my-color'></div></div>")
 
 
 }
-function setupMaster() {
-    myRole = "master"
-    console.log("👨🏼‍🌾 I'm the MASTER now")
-    mySketch = new p5(masterSketch)
-    socket.emit('imMaster', peer.id)
+function setupSender() {
+    myRole = "sender"
+    console.log("📢 I'm the sender now")
+    mySketch = new p5(senderSketch)
+    socket.emit('imSender', peer.id)
 
 }
 
@@ -275,82 +258,6 @@ console.log = function (...items) {
     });
     output.innerHTML += items.join(' ') + '<br />';
     output.scrollTop = output.scrollHeight;
-}; 
+};
 //end of mobile console
 
-
-//Refactored Time sync Example form https://github.com/enmasseio/timesync/blob/master/examples/advanced/peerjs/client.js
-/**
- * Create a peer with id, and connect to the given peers
- * @param {string} id
- * @param {string[]} peers
- * @return {{peer: Window.Peer, ts: Object}} Returns an object with the
- *                                           created peer and the timesync
- *//*
-function connect(id, peers) {
-var domSystemTime = document.getElementById('systemTime');
-var domSyncTime = document.getElementById('syncTime');
-var domOffset = document.getElementById('offset');
-var domSyncing = document.getElementById('syncing');
-let peersFromconn = connections.map((conn) => {
-return conn.peer
-})
-ts = timesync.create({
-peers: peersFromconn,
-interval: 5000,
-
-timeout: 1000
-});
-
-ts.on('sync', function (state) {
-//console.log('sync ' + state);
-if (state == 'start') {
-ts.options.peers = peersFromconn;
-// console.log('syncing with peers [' + ts.options.peers + ']');
-if (ts.options.peers.length) {
- domSyncing.innerHTML = 'syncing with ' + ts.options.peers + '...';
-}
-}
-if (state == 'end') {
-domSyncing.innerHTML = '';
-}
-});
-
-ts.on('change', function (offset) {
-// console.log('changed offset: ' + offset);
-domOffset.innerHTML = offset.toFixed(1) + ' ms';
-});
-
-ts.send = function (id, data, timeout) {
-//console.log('send', id, data);
-var all = peer.connections[id];
-var conn = all && all.filter(function (conn) {
-return conn.open;
-})[0];
-
-if (conn) {
-conn.send(data);
-}
-else {
-console.log(new Error('Cannot send message: not connected to ' + id).toString());
-}
-
-// Ignoring timeouts
-return Promise.resolve();
-};
-
-// show the system time and synced time once a second on screen
-setInterval(function () {
-domSystemTime.innerHTML = new Date().toISOString().replace(/[A-Z]/g, ' ');
-domSyncTime.innerHTML = new Date(ts.now()).toISOString().replace(/[A-Z]/g, ' ');
-}, 1000);
-
-
-
-return {
-peer: peer,
-ts: ts
-};
-}
-*/
-//end of timesync

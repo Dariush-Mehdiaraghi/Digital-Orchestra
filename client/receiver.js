@@ -12,8 +12,8 @@ let audioNodes = [gain_node, microphone_stream, script_processor_node, analyserN
 
 let frequencyFound
 
-let slaveSketch = function (p) {
-    p.role = "slave";
+let receiverSketch = function (p) {
+    p.role = "receiver";
     p.mic;
     p.fft;
     p.peakBuffer = []
@@ -31,9 +31,7 @@ let slaveSketch = function (p) {
     }
 
     p.draw = function () {
-
         p.stroke(mySecondaryColor)
-
         p.background(myBackgroundColor);
 
         let indexOfMaxValue = indexOfMax(spectrum);
@@ -52,18 +50,17 @@ let slaveSketch = function (p) {
                 spectrum[indexOfMaxValue] > p.peakMinAmp &&
                 frequencyFound != peakFreq &&
                 peakFreq > 1900 &&
-                !hasMaster
+                !hasSender
             ) {
                 frequencyFound = peakFreq
                 socket.emit('foundFreq', frequencyFound)
                 console.log("〰️ found frequency: " + frequencyFound + "Hz")
             }
-
-
         }
 
 
         p.beginShape();
+
         let x = 0;
         for (i = 0; i < spectrum.length; i++) {
             if (x < spectrum.length - p.specScale) {
@@ -73,6 +70,7 @@ let slaveSketch = function (p) {
 
 
         }
+
         p.endShape();
 
         if (spectrum[indexOfMaxValue] > p.peakMinAmp) {
@@ -89,11 +87,11 @@ let slaveSketch = function (p) {
     p.windowResized = function () {
         p.resizeCanvas(p.windowWidth, p.windowHeight);
     }
+
     function indexOfMax(arr) {
         if (arr.length === 0) {
             return -1;
         }
-
         var max = arr[0];
         var maxIndex = 0;
 
@@ -103,12 +101,11 @@ let slaveSketch = function (p) {
                 max = arr[i];
             }
         }
-
         return maxIndex;
     }
     function round_to_precision(x, precision) {
         var y = +x + (precision === undefined ? 0.5 : precision / 2);
-        return y - (y % (precision === undefined ? 1 : +precision));
+        return y - (y % (precision === undefined ? 1 : + precision));
     }
 }
 
@@ -128,7 +125,7 @@ function startMicrophoneInput() {
         if (navigator.mediaDevices.getUserMedia) {
             navigator.mediaDevices.getUserMedia({ audio: true, video: false })
                 .then(function (stream) {
-                    start_microphone(stream);    //Display the video stream in the video object
+                    start_microphone(stream);
                 })
                 .catch(function (e) { logError(e.name + ": " + e.message); });
         }
@@ -143,13 +140,10 @@ function startMicrophoneInput() {
         // ---
 
 
-        function process_microphone_buffer(event) { // invoked by event loop
+        function process_microphone_buffer(event) {
 
             var i, N, inp, microphone_output_buffer;
-
-            microphone_output_buffer = event.inputBuffer.getChannelData(0); // just mono - 1 channel for now
-
-            // microphone_output_buffer  <-- this buffer contains current gulp of data size BUFF_SIZE
+            microphone_output_buffer = event.inputBuffer.getChannelData(0);
 
         }
 
@@ -182,19 +176,13 @@ function startMicrophoneInput() {
 
             script_processor_fft_node.onaudioprocess = function () {
                 analyserNode.smoothingTimeConstant = 0.8
-                // let spectrum = new Uint8Array(analyserNode.frequencyBinCount);
                 analyserNode.getByteFrequencyData(spectrum);
-                // console.log( analyserNode.frequencyBinCount)
-                // draw the spectrogram
-                /* if (microphone_stream.playbackState == microphone_stream.PLAYING_STATE) {
-         
-                     show_some_data(spectrum, 5, "from fft");
-                 }*/
+
             };
             audioNodes = [gain_node, microphone_stream, script_processor_node, analyserNode]
         }
 
-    }();//  webaudio_tooling_obj = function()
+    }();
 
 
 }
