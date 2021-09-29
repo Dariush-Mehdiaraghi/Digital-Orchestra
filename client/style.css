@@ -35,7 +35,7 @@ body {
     justify-content: center;
     height: 99vh;
 }
-#master, #slave{
+#sender, #receiver{
     cursor: pointer;
 }
 
@@ -67,7 +67,7 @@ body {
     position: relative;
 }
 
-#master-controls {
+#sender-controls {
     width: 100%;
     display: flex;
     justify-content: flex-start;
@@ -127,7 +127,7 @@ body {
 #inc-BPM{
     margin-bottom: 5px;
 }
-#master-div {
+#sender-div {
     margin-top: 5px;
     display: flex;
     align-items: center;

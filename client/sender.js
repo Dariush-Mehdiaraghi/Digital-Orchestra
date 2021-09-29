@@ -1,8 +1,8 @@
 let frequencyToPlay
 let playing
 
-let masterSketch = function (p) {
-    p.role = "master";
+let senderSketch = function (p) {
+    p.role = "sender";
     p.setup = function () {
         p.osc = new p5.Oscillator('sine');
         p.playOscillator()
@@ -20,9 +20,9 @@ let masterSketch = function (p) {
     }
 
 }
-function createMasterControls() {
-    $("body").append("<div id='master-div'></div>")
-    $("#master-div").append("<div id='master-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>Play</span></div></div>")
+function createSenderControls() {
+    $("body").append("<div id='sender-div'></div>")
+    $("#sender-div").append("<div id='sender-controls'><div class='toggle' id='playButton'><input type='checkbox'><span class='button'></span><span class='label'>Play</span></div></div>")
     $("#playButton").click((e) => {
         if ($("#playButton .label").html() == "Play") {
             $("#playButton .label").html("Stop")
@@ -34,7 +34,7 @@ function createMasterControls() {
             Tone.Transport.pause()
             $("#playButton .label").html("Play")
         }
-        removeMasterSlave()
+        removeSenderReceiver()
         mySketch.remove();
 
     })
@@ -44,7 +44,7 @@ function createMasterControls() {
 
 
 function appendBPMControl() {
-    $("#master-controls").append("<div id='BPM-Stepper'><div id='BPM-controls'><div id='inc-BPM' class='BPM-control'>+</div><div id='dec-BPM' class='BPM-control'>-</div></div><div id='BPM-label'>120</div></div>")
+    $("#sender-controls").append("<div id='BPM-Stepper'><div id='BPM-controls'><div id='inc-BPM' class='BPM-control'>+</div><div id='dec-BPM' class='BPM-control'>-</div></div><div id='BPM-label'>120</div></div>")
     $("#inc-BPM").click(() => {
 
         gsap.fromTo(
@@ -88,7 +88,7 @@ function createSequencer(conn) {
     let noteNames = ["F#3", "E3", "C#3", "A3"]
     let noteCount = noteNames.length
 
-    $("#master-div").append(`<div class='tone-step-sequencer' id='sequencer-${conn.peer}'></div>`)
+    $("#sender-div").append(`<div class='tone-step-sequencer' id='sequencer-${conn.peer}'></div>`)
     for (let j = 0; j < noteCount; j++) {
         $(".tone-step-sequencer").last().append("<div class='seqRow'></div>")
         for (let i = 0; i < seqLength; i++) {
@@ -103,7 +103,7 @@ function createSequencer(conn) {
     );
     conn.send({ color: colors[($(".tone-step-sequencer").length - 1) % (colors.length - 1)] }) // sending corresponding color
     //setup a polyphonic synth
-    //  let polySynth = new Tone.PolySynth(Tone.Synth).toMaster();
+    //  let polySynth = new Tone.PolySynth(Tone.Synth).tosender();
 
 
     Tone.Transport.scheduleRepeat(loop, `${seqLength}n`)
