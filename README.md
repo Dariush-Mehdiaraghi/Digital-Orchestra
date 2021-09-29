@@ -12,9 +12,6 @@ The great problem of webRTC in a musical sense, is that it doesn't have a consis
 The sequencer in this project only looks realtime because the animation is delayed (about 1.6s).<br/>
 A problem which still exists in this project is that the Tone.js time-contexts in the receiving devices do not start perfectly in parallel. So the time on a certain device is slightly off to another device. Using the time of the [Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object is also not a reliable option due to slight timing differences of different devices.<br/>
 
-### Architecture and sequence diagramm
-![Image of Architecure](/images/ArchitekturDiagramm_Dariush_Mehdiaraghi.png)
-![Image of Sequence](/images/Sequence_Diahgramm_Dariush_Mehdiaraghi.png)
 
 To install the dependencies: `npm install` or `yarn` once. <br/>
 And then to start it: `npm start` or `yarn start`
