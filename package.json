@@ -1,26 +1,26 @@
 {
   "name": "digital-orchestra",
-  "version": "1.0.0",
-  "description": "Sending OSC via WebRTC",
-  "main": "server/index.js",
+  "version": "2.0.0",
+  "description": "Modern WebRTC cross-device music collaboration app",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server/server.js"
+    "dev": "concurrently \"vite\" \"bun run src/server/index.ts\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "bun run src/server/index.ts",
+    "type-check": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "babelify": "10.0.0",
-    "express": "^4.17.1",
-    "nodemon": "^2.0.2",
-    "peer": "^0.5.2",
-    "socket.io": "^2.3.0",
-    "timesync": "^1.0.5"
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "concurrently": "^9.2.1",
+    "svelte": "^5.46.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
   },
-  "devDependencies": {},
-  "browserify": {
-    "transform": [
-      "babelify"
-    ]
+  "dependencies": {
+    "peerjs": "^1.5.5",
+    "tone": "^15.1.22"
   }
 }

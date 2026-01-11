@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro&display=swap');
+
+:root {
+  /* Colors - matching legacy */
+  --bodyBg: white;
+  --secondaryColor: #707070;
+  --primary-color: #2671BC;
+  --danger-color: #F15A24;
+  --success-color: #096836;
+  
+  /* Legacy variables for compatibility */
+  --bg-primary: var(--bodyBg);
+  --bg-secondary: var(--bodyBg);
+  --text-primary: var(--secondaryColor);
+  --text-secondary: var(--secondaryColor);
+  --border-color: var(--secondaryColor);
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+  
+  /* Border radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bodyBg: black;
+    --secondaryColor: #707070;
+    --bg-primary: black;
+    --bg-secondary: black;
+    --text-primary: #707070;
+    --text-secondary: #707070;
+    --border-color: #707070;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  background-color: var(--bodyBg);
+  color: var(--secondaryColor);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 48px;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Typography - minimal like legacy */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 1em;
+}
+
+h2 {
+  font-size: 1em;
+}
+
+h3 {
+  font-size: 0.5em;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary-color);
+  color: white;
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utility classes */
+.fade-in {
+  animation: fadeIn 0.5s ease;
+}
+
+.pulse {
+  animation: pulse 2s ease infinite;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Toast notifications */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  box-shadow: var(--shadow-lg);
+  animation: fadeIn 0.3s ease;
+  z-index: 1000;
+}
+
+.toast.success {
+  border-color: var(--success-color);
+  background: rgba(9, 104, 54, 0.1);
+}
+
+.toast.error {
+  border-color: var(--danger-color);
+  background: rgba(241, 90, 36, 0.1);
+}
+
+/* Mobile console for debugging */
+console {
+  overflow: scroll;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  font-size: 0.2em;
+  max-height: 10%;
+  background: rgba(0, 0, 0, 0.95);
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  padding: 0.5rem;
+  z-index: 9999;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  
+  button {
+    display: none;
+  }
+}
