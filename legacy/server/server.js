@@ -7,7 +7,7 @@ const http = require('http').createServer(app);
 const port = process.env.PORT || 3000;
 const path = require("path");
 const io = require('socket.io')(http);
-const publicPath = path.join(__dirname + '/../client');
+const publicPath = path.join(__dirname + '/../dist');
 
 let clients = new Map(); // key: socket, value: peerID 
 let rooms = new Map(); // key: freq, value: peerID (PeerID of the sender is a room)
