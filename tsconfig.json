@@ -1,5 +1,4 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
@@ -12,7 +11,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "types": ["bun-types", "vite/client"],
+    "isolatedModules": true,
+    "types": ["vite/client"],
     "paths": {
       "$lib/*": ["./src/client/lib/*"],
       "$shared/*": ["./src/shared/*"]
