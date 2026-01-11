@@ -1,20 +1,19 @@
+@import url('https://fonts.googleapis.com/css?family=Anonymous+Pro&display=swap');
+
 :root {
-  /* Colors */
+  /* Colors - matching legacy */
+  --bodyBg: white;
+  --secondaryColor: #707070;
   --primary-color: #2671BC;
-  --secondary-color: #FBA500;
   --danger-color: #F15A24;
   --success-color: #096836;
   
-  /* Background colors */
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #1a1a1a;
-  
-  /* Text colors */
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0a0;
-  
-  /* Border */
-  --border-color: #333333;
+  /* Legacy variables for compatibility */
+  --bg-primary: var(--bodyBg);
+  --bg-secondary: var(--bodyBg);
+  --text-primary: var(--secondaryColor);
+  --text-secondary: var(--secondaryColor);
+  --border-color: var(--secondaryColor);
   
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -39,14 +38,16 @@
   --radius-lg: 1rem;
 }
 
-/* Light mode (optional) */
-@media (prefers-color-scheme: light) {
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f5f5f5;
-    --text-primary: #1a1a1a;
-    --text-secondary: #666666;
-    --border-color: #e0e0e0;
+    --bodyBg: black;
+    --secondaryColor: #707070;
+    --bg-primary: black;
+    --bg-secondary: black;
+    --text-primary: #707070;
+    --text-secondary: #707070;
+    --border-color: #707070;
   }
 }
 
@@ -61,32 +62,36 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  background-color: var(--bodyBg);
+  color: var(--secondaryColor);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-size: 48px;
+  line-height: 1.2;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* Typography */
+/* Typography - minimal like legacy */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
+  font-weight: normal;
   line-height: 1.2;
-  margin-bottom: 0.5em;
+  margin: 0;
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 1em;
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: 1em;
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: 0.5em;
 }
 
 p {
@@ -232,27 +237,17 @@ a:hover {
 
 /* Mobile console for debugging */
 console {
+  overflow: scroll;
+  width: 100%;
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
-  max-height: 200px;
-  overflow-y: auto;
+  font-size: 0.2em;
+  max-height: 10%;
   background: rgba(0, 0, 0, 0.95);
   color: #00ff00;
   font-family: 'Courier New', monospace;
-  font-size: 10px;
   padding: 0.5rem;
   z-index: 9999;
-  display: none;
-  border-top: 1px solid #333;
-}
-
-/* Show console in development */
-@media (max-width: 768px) {
-  console {
-    display: block;
-  }
 }
 
 /* Responsive design */

@@ -11,8 +11,8 @@ export class FrequencyDetector {
   // Detection parameters
   private readonly fftSize = 8192;
   private readonly peakBufferSize = 80;
-  private readonly peakMinAmplitude = 0.5;
-  private readonly frequencyThreshold = 1900; // Minimum frequency to detect
+  private readonly peakMinAmplitude = -60; // Minimum dB threshold (FFT returns dB values, -60 is more sensitive)
+  private readonly frequencyThreshold = 1800; // Minimum frequency to detect (lowered to catch edge cases)
   
   private peakBuffer: number[] = [];
   private peakCount = 0;
@@ -27,11 +27,18 @@ export class FrequencyDetector {
     this.onFrequencyDetected = onFrequencyDetected;
     
     try {
+      // Start Tone.js audio context first
+      await Tone.start();
+      console.log('🎵 Tone.js audio context started');
+      
       this.mic = new Tone.UserMedia();
       this.fft = new Tone.FFT(this.fftSize);
       
       this.mic.connect(this.fft);
       await this.mic.open();
+      
+      // Wait a bit for mic to stabilize
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       this.isRunning = true;
       this.detect();
@@ -84,14 +91,12 @@ export class FrequencyDetector {
     
     // Find peak frequency
     const indexOfMaxValue = this.findPeakIndex(spectrum);
-    const sampleRate = 44100; // Standard sample rate
-    const peakFreq = this.roundToPrecision(
-      (indexOfMaxValue * (sampleRate / 2)) / spectrum.length,
-      100
-    );
+    const sampleRate = Tone.context.sampleRate;
+    const exactFreq = (indexOfMaxValue * (sampleRate / 2)) / spectrum.length;
+    const peakFreq = this.roundToPrecision(exactFreq, 100);
 
-    // Get amplitude at peak
-    const amplitude = Math.abs(spectrum[indexOfMaxValue] as number);
+    // Get amplitude at peak (FFT returns dB values, which are negative)
+    const amplitudeDB = spectrum[indexOfMaxValue] as number;
 
     // Add to buffer
     if (peakFreq > 0) {
@@ -107,14 +112,14 @@ export class FrequencyDetector {
       // Frequency is detected if:
       // 1. Buffer average equals current peak (stable detection)
       // 2. Peak frequency is above threshold
-      // 3. Amplitude is strong enough
+      // 3. Amplitude is strong enough (dB value is above threshold, meaning louder)
       // 4. It's a new frequency (not already detected)
-      if (
-        Math.abs(avgFreq - peakFreq) < 10 && // Stable within 10Hz
-        peakFreq > this.frequencyThreshold &&
-        amplitude > this.peakMinAmplitude &&
-        this.lastDetectedFreq !== peakFreq
-      ) {
+      const isStable = Math.abs(avgFreq - peakFreq) < 50;
+      const isLoudEnough = amplitudeDB > this.peakMinAmplitude;
+      const isInRange = peakFreq >= this.frequencyThreshold;
+      const isNew = this.lastDetectedFreq !== peakFreq;
+      
+      if (isStable && peakFreq > 0 && isLoudEnough && isInRange && isNew) {
         this.lastDetectedFreq = peakFreq;
         
         if (this.onFrequencyDetected) {
@@ -130,12 +135,22 @@ export class FrequencyDetector {
 
   /**
    * Find the index of the maximum value in the spectrum
+   * Only search in the relevant frequency range (1800Hz - 12000Hz for beeps)
    */
   private findPeakIndex(spectrum: Float32Array): number {
-    let maxIndex = 0;
-    let maxValue = spectrum[0];
+    const sampleRate = Tone.context.sampleRate;
+    const minFreq = 1800;
+    const maxFreq = 12000;
+    
+    // Convert frequencies to bin indices
+    const minBin = Math.floor((minFreq / (sampleRate / 2)) * spectrum.length);
+    const maxBin = Math.ceil((maxFreq / (sampleRate / 2)) * spectrum.length);
+    
+    let maxIndex = minBin;
+    let maxValue = spectrum[minBin];
 
-    for (let i = 1; i < spectrum.length; i++) {
+    // Only search in the relevant range
+    for (let i = minBin; i < maxBin && i < spectrum.length; i++) {
       if (spectrum[i] > maxValue) {
         maxValue = spectrum[i];
         maxIndex = i;

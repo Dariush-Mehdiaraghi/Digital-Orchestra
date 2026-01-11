@@ -154,9 +154,11 @@
     </button>
 
     <div class="bpm-control">
-      <button class="bpm-btn" on:click={decrementBPM}>−</button>
-      <span class="bpm-display">{bpm} BPM</span>
-      <button class="bpm-btn" on:click={incrementBPM}>+</button>
+      <div style="display: flex; flex-direction: column;">
+        <button class="bpm-btn" on:click={incrementBPM}>+</button>
+        <button class="bpm-btn" on:click={decrementBPM}>−</button>
+      </div>
+      <span class="bpm-display">{bpm}</span>
     </div>
   </div>
 
@@ -189,126 +191,104 @@
 
 <style>
   .sender {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: min-content;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  h2 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .frequency {
-    color: var(--text-secondary);
-    font-family: monospace;
+    display: none;
   }
 
   .controls {
+    width: 100%;
     display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 2rem;
+    justify-content: flex-start;
+    gap: 0;
+    margin-bottom: 0;
   }
 
   .play-button {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 0.5rem;
-    background: var(--primary-color);
-    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    height: 42px;
+    border: solid 1px var(--secondaryColor);
+    border-radius: 7px;
+    padding: 7px;
+    margin: 3px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    background: transparent;
+    color: var(--secondaryColor);
+    font-size: 0.4em;
+    transition: opacity 0.2s ease;
   }
 
   .play-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
-
-  .play-button.playing {
-    background: var(--danger-color);
+    opacity: 0.6;
   }
 
   .bpm-control {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.5rem 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
+    margin: 3px;
+    gap: 0;
   }
 
   .bpm-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: var(--primary-color);
-    color: white;
-    border-radius: 0.25rem;
     cursor: pointer;
-    font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    width: 16px;
+    height: 16px;
+    font-size: 0.7em;
+    background: none;
+    border: none;
+    color: var(--secondaryColor);
+    padding: 0;
+    transition: opacity 0.2s ease;
   }
 
   .bpm-btn:hover {
-    transform: scale(1.1);
+    opacity: 0.6;
+  }
+
+  .bpm-btn:first-child {
+    margin-bottom: 5px;
   }
 
   .bpm-display {
-    font-weight: 600;
-    font-size: 1.1rem;
-    min-width: 80px;
-    text-align: center;
+    display: flex;
+    height: 100%;
+    font-size: 1em;
+    margin-left: 5px;
+    font-weight: normal;
   }
 
   .connections-status {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+    display: none;
   }
 
   .sequencers {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0;
   }
 
   .empty-state {
+    font-size: 0.5em;
     text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-secondary);
+    padding: 2em;
+    color: var(--secondaryColor);
   }
 
   .hint {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  @media (max-width: 768px) {
-    .sender {
-      padding: 1rem;
-    }
-
-    .controls {
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-    }
+    display: none;
   }
 </style>

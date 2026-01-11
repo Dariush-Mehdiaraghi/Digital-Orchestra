@@ -40,81 +40,49 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    padding: 2rem;
-    text-align: center;
+    height: 99vh;
   }
 
   h1 {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-size: 1em;
+    margin-bottom: 0;
   }
 
   .subtitle {
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    margin-bottom: 3rem;
+    display: none;
   }
 
   .button-container {
     display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
   }
 
   .role-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 2.5rem 3rem;
-    border: 2px solid var(--border-color);
-    border-radius: 1rem;
-    background: var(--bg-secondary);
+    background: none;
+    border: none;
+    color: var(--secondaryColor);
     cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 200px;
+    font-size: 1em;
+    padding: 0.5em 0;
+    transition: opacity 0.2s ease;
   }
 
   .role-button:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    border-color: var(--primary-color);
-  }
-
-  .role-button:active {
-    transform: translateY(-2px);
+    opacity: 0.6;
   }
 
   .icon {
-    font-size: 3rem;
+    display: none;
   }
 
   .label {
-    font-size: 1.5rem;
-    font-weight: 600;
+    font-size: 1em;
+    font-weight: normal;
   }
 
   .description {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-  }
-
-  @media (max-width: 640px) {
-    h1 {
-      font-size: 2rem;
-    }
-
-    .button-container {
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .role-button {
-      width: 100%;
-      max-width: 300px;
-    }
+    display: none;
   }
 </style>

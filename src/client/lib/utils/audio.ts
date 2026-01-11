@@ -6,6 +6,7 @@ export class AudioManager {
   private oscillator: Tone.Oscillator | null = null;
   private isPlaying = false;
   private colorIndex = 0;
+  private samplerLoaded = false;
 
   /**
    * Initialize the audio context (must be called on user interaction)
@@ -20,30 +21,39 @@ export class AudioManager {
    */
   async loadSampler(colorIndex: number): Promise<void> {
     this.colorIndex = colorIndex;
+    this.samplerLoaded = false;
     
     // Dispose of old sampler if it exists
     if (this.sampler) {
       this.sampler.dispose();
     }
-
+    
     return new Promise((resolve, reject) => {
-      Tone.context.latencyHint = 'balanced';
+      const urls = {
+        'F#3': `1.mp3`,
+        'E3': `2.mp3`,
+        'C#3': `3.mp3`,
+        'A3': `4.mp3`,
+      };
       
+      const baseUrl = `/audio/s${colorIndex}/`;
+      
+      // Set a timeout in case the onload never fires
+      const timeout = setTimeout(() => {
+        this.samplerLoaded = true;
+        resolve();
+      }, 5000);
+      
+      // Tone.Sampler(urls, onload, baseUrl)
       this.sampler = new Tone.Sampler(
-        {
-          'F#3': `/audio/s${colorIndex}/1.mp3`,
-          'E3': `/audio/s${colorIndex}/2.mp3`,
-          'C#3': `/audio/s${colorIndex}/3.mp3`,
-          'A3': `/audio/s${colorIndex}/4.mp3`,
-        },
+        urls,
         () => {
+          clearTimeout(timeout);
+          this.samplerLoaded = true;
           console.log(`✅ Sampler loaded for color ${COLORS[colorIndex]}`);
           resolve();
         },
-        (error) => {
-          console.error('❌ Failed to load sampler:', error);
-          reject(error);
-        }
+        baseUrl
       ).toDestination();
     });
   }
@@ -52,14 +62,12 @@ export class AudioManager {
    * Play notes at a specific time
    */
   playNotes(notes: string[], time: number): void {
-    if (!this.sampler) {
-      console.warn('⚠️ Sampler not loaded');
+    if (!this.sampler || !this.samplerLoaded) {
       return;
     }
 
     try {
       this.sampler.triggerAttack(notes, time);
-      console.log('🎵 Playing notes:', notes, 'at time:', time);
     } catch (error) {
       console.error('❌ Error playing notes:', error);
     }
@@ -90,7 +98,10 @@ export class AudioManager {
   /**
    * Create and start beeping oscillator at frequency
    */
-  startBeeping(frequency: number): void {
+  async startBeeping(frequency: number): Promise<void> {
+    // Ensure audio context is started
+    await Tone.start();
+    
     if (this.oscillator) {
       this.oscillator.stop();
       this.oscillator.dispose();
@@ -136,6 +147,13 @@ export class AudioManager {
   }
 
   /**
+   * Check if sampler is ready to play
+   */
+  isSamplerReady(): boolean {
+    return this.samplerLoaded && this.sampler !== null;
+  }
+
+  /**
    * Clean up resources
    */
   dispose(): void {
@@ -152,6 +170,7 @@ export class AudioManager {
     
     Tone.Transport.stop();
     this.isPlaying = false;
+    this.samplerLoaded = false;
     console.log('🧹 Audio manager disposed');
   }
 }

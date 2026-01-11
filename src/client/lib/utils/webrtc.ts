@@ -68,7 +68,9 @@ export class WebRTCManager {
       return;
     }
 
+    console.log('📞 Initiating connection to:', peerId);
     const conn = this.peer.connect(peerId, { serialization: 'json' });
+    console.log('📞 Connection object created, waiting for open...');
     this.setupConnection(conn);
   }
 
@@ -76,6 +78,8 @@ export class WebRTCManager {
    * Setup a connection with event handlers
    */
   private setupConnection(conn: DataConnection): void {
+    console.log('🔧 Setting up connection to:', conn.peer);
+    
     const peerConnection: PeerConnection = {
       connection: conn,
       state: ConnectionState.Connecting,
@@ -105,10 +109,12 @@ export class WebRTCManager {
     });
 
     conn.on('error', (error) => {
-      console.error('⛔ Connection error:', error);
+      console.error('⛔ Connection error to', conn.peer, ':', error);
       peerConnection.state = ConnectionState.Failed;
       this.notifyStateChange(ConnectionState.Failed, conn.peer);
     });
+    
+    console.log('✅ Connection event handlers attached');
   }
 
   /**

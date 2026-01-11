@@ -11,6 +11,7 @@
   import { AudioManager } from './lib/utils/audio';
   import { FrequencyDetector } from './lib/utils/frequency-detector';
   import { getTimeSync } from './lib/utils/time-sync';
+  import * as Tone from 'tone';
 
   let role = UserRole.None;
   let ws: WebSocket | null = null;
@@ -59,13 +60,14 @@
   }
 
   async function handleWebSocketMessage(message: any) {
+    console.log('📨 Received WebSocket message:', message);
     switch (message.type) {
       case 'room-created':
         const frequency = message.payload.frequency;
+        console.log(`🎯 Room created at frequency: ${frequency}Hz`);
         roleStore.setFrequency(frequency);
-        audioManager.startBeeping(frequency);
+        await audioManager.startBeeping(frequency);
         audioStore.setBeeping(true);
-        console.log(`🐝 Beeping at ${frequency}Hz`);
         break;
 
       case 'room-found':
@@ -88,25 +90,30 @@
   async function selectRole(event: CustomEvent<UserRole>) {
     const selectedRole = event.detail;
     roleStore.setRole(selectedRole);
+    console.log(`👤 Selected role: ${selectedRole}`);
 
     // Initialize WebRTC
     const peerId = await webrtc.initialize(handleRTCMessage, handleConnectionStateChange);
     connectionStore.setMyPeerId(peerId);
+    console.log(`🆔 Peer initialized with ID: ${peerId}`);
 
     // Register with server
     if (ws && ws.readyState === WebSocket.OPEN) {
+      console.log('📤 Registering with server...');
       ws.send(JSON.stringify({
         type: 'register-peer',
         payload: { peerId }
       }));
 
       if (selectedRole === UserRole.Sender) {
-        // Create room
+        console.log('📤 Requesting room creation...');
         ws.send(JSON.stringify({
           type: 'create-room',
           payload: { peerId }
         }));
       }
+    } else {
+      console.error('❌ WebSocket not ready, readyState:', ws?.readyState);
     }
   }
 
@@ -120,9 +127,9 @@
         const timeToPlay = noteMsg.payload.time - timeDelta + 0.8;
         audioManager.playNotes(noteMsg.payload.notes, timeToPlay);
         
-        // Visual feedback
+        // Schedule visual feedback at the same time as audio
         if ($roleStore.assignedColor) {
-          flashBackground($roleStore.assignedColor);
+          scheduleFlash($roleStore.assignedColor, timeToPlay);
         }
         break;
 
@@ -138,7 +145,9 @@
         roleStore.setColor(color);
         const colorIndex = COLORS.indexOf(color);
         if (colorIndex >= 0) {
-          audioManager.loadSampler(colorIndex);
+          audioManager.loadSampler(colorIndex).catch((error) => {
+            console.error(`Failed to load sampler:`, error);
+          });
         }
         break;
 
@@ -189,13 +198,21 @@
     }
   }
 
-  function flashBackground(color: string) {
-    const root = document.documentElement;
-    root.style.setProperty('--flash-color', color);
-    document.body.classList.add('flash');
-    setTimeout(() => {
-      document.body.classList.remove('flash');
-    }, 900);
+  function scheduleFlash(color: string, time: number) {
+    // Schedule visual feedback at the exact time the note plays
+    Tone.Draw.schedule(() => {
+      // Get the CSS variable value, not computed style (which might be mid-transition)
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const originalBg = isDark ? 'black' : 'white';
+      
+      document.body.style.transition = 'background-color 0s';
+      document.body.style.backgroundColor = color;
+      
+      setTimeout(() => {
+        document.body.style.transition = 'background-color 0.9s ease-in-out';
+        document.body.style.backgroundColor = originalBg;
+      }, 50);
+    }, time);
   }
 </script>
 
@@ -216,22 +233,8 @@
     box-sizing: border-box;
   }
 
-  :global(body) {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    transition: background-color 0.9s ease;
-  }
-
-  :global(body.flash) {
-    background-color: var(--flash-color) !important;
-  }
-
   main {
-    min-height: 100vh;
-  }
-
-  :global(button) {
-    font-family: inherit;
+    width: 100%;
+    height: 100vh;
   }
 </style>

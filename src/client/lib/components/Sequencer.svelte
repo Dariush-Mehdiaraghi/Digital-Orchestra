@@ -50,106 +50,71 @@
 
 <style>
   .sequencer {
-    background: var(--bg-secondary);
-    border-radius: 0.75rem;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-    border: 2px solid var(--border-color);
+    width: min-content;
+    border: solid 1px var(--secondaryColor);
+    border-radius: 7px;
+    padding: 5px;
+    margin-bottom: 3px;
+    margin-left: 3px;
+    margin-right: 3px;
   }
 
   .sequencer-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .peer-id {
-    font-family: monospace;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-  }
-
-  .color-indicator {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--border-color);
+    display: none;
   }
 
   .sequencer-grid {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0;
   }
 
   .note-row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0;
   }
 
   .note-label {
-    width: 50px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-align: right;
+    display: none;
   }
 
   .steps {
     display: flex;
-    gap: 4px;
-    flex: 1;
+    gap: 0;
   }
 
   .step {
-    flex: 1;
-    aspect-ratio: 1;
-    min-width: 0;
-    padding: 0;
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
-    border-radius: 4px;
+    transition: all 0.1s ease-in-out;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    margin: 5px 3px;
+    justify-content: center;
+    align-items: center;
+    border: solid 1px var(--secondaryColor);
+    border-radius: 100%;
     cursor: pointer;
-    transition: all 0.15s ease;
+    background: transparent;
+    padding: 0;
     position: relative;
-    overflow: hidden;
   }
 
   .step:hover {
-    border-color: var(--seq-color);
-    transform: scale(1.1);
+    opacity: 0.7;
   }
 
   .step.active {
-    background: var(--seq-color);
-    border-color: var(--seq-color);
+    background-color: var(--seq-color);
   }
 
   .step.current {
-    box-shadow: 0 0 0 2px var(--primary-color);
-    z-index: 1;
+    background-color: var(--secondaryColor);
   }
 
   .step-inner {
     display: block;
     width: 100%;
     height: 100%;
-  }
-
-  @media (max-width: 768px) {
-    .note-label {
-      width: 40px;
-      font-size: 0.75rem;
-    }
-
-    .steps {
-      gap: 2px;
-    }
-
-    .step {
-      border-radius: 2px;
-    }
   }
 </style>

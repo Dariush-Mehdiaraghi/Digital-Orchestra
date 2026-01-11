@@ -13,6 +13,7 @@
   let detectedFrequency: number | null = null;
   let isListening = false;
   let animationFrame: number;
+  let audioStarted = false;
 
   $: assignedColor = $roleStore.assignedColor;
   $: hasSender = $connectionStore.connections.length > 0;
@@ -27,7 +28,7 @@
       updateSpectrum();
     } catch (error) {
       console.error('Failed to start frequency detection:', error);
-      alert('Microphone access is required to detect pairing frequency');
+      alert('Microphone access is required to detect pairing frequency. Please allow microphone access and refresh.');
     }
   });
 
@@ -35,10 +36,14 @@
     if (animationFrame) {
       cancelAnimationFrame(animationFrame);
     }
+    frequencyDetector.stop();
   });
 
   function updateSpectrum() {
-    spectrum = frequencyDetector.getSpectrum();
+    const newSpectrum = frequencyDetector.getSpectrum();
+    if (newSpectrum && newSpectrum.length > 0) {
+      spectrum = newSpectrum;
+    }
     animationFrame = requestAnimationFrame(updateSpectrum);
   }
 </script>
@@ -59,9 +64,11 @@
     </div>
   {/if}
 
-  <div class="visualizer-wrapper">
-    <FrequencyVisualizer {spectrum} {detectedFrequency} />
-  </div>
+  {#if !hasSender}
+    <div class="visualizer-wrapper">
+      <FrequencyVisualizer {spectrum} {detectedFrequency} />
+    </div>
+  {/if}
 
   <div class="instructions">
     {#if !hasSender}
@@ -79,84 +86,42 @@
 
 <style>
   .receiver {
-    padding: 2rem;
-    max-width: 800px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
   }
 
   .header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .status {
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-    display: inline-block;
-  }
-
-  .status.listening {
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-  }
-
-  .status.connected {
-    background: rgba(76, 255, 76, 0.2);
-    color: rgb(0, 200, 0);
-    border: 1px solid rgb(76, 255, 76);
+    display: none;
   }
 
   .color-display {
-    margin: 2rem auto;
-    padding: 2rem;
-    border-radius: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    max-width: 200px;
+    transition: all 2s ease-in-out;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    margin: 5px 3px;
+    justify-content: center;
+    align-items: center;
+    border: solid 1px var(--secondaryColor);
+    border-radius: 100%;
+    position: relative;
+  }
+
+  .color-display span {
+    display: none;
   }
 
   .visualizer-wrapper {
-    margin: 2rem 0;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -2;
   }
 
   .instructions {
-    text-align: center;
-    color: var(--text-secondary);
-    margin-top: 2rem;
-  }
-
-  h3 {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-  }
-
-  ol {
-    text-align: left;
-    display: inline-block;
-    margin: 0 auto;
-  }
-
-  li {
-    margin-bottom: 0.5rem;
-  }
-
-  @media (max-width: 768px) {
-    .receiver {
-      padding: 1rem;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-    }
+    display: none;
   }
 </style>
