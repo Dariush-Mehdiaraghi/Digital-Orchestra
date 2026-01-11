@@ -5,12 +5,12 @@ WORKDIR /app
 # Install dependencies
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
+COPY package.json bun.lock /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 # Install production dependencies
 RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod/
+COPY package.json bun.lock /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # Build the application
@@ -29,8 +29,7 @@ COPY --from=build /app/src ./src
 COPY --from=build /app/public ./public
 COPY --from=build /app/package.json .
 
-# Expose port
-ENV PORT=3000
+# Railway injects PORT env var dynamically
 ENV NODE_ENV=production
 EXPOSE 3000
 
